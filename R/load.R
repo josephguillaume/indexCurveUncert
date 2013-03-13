@@ -1,0 +1,54 @@
+## index.all
+## List
+## $ {species}_{attrib} data.frame
+## attribute values (x coordinate)
+## separate index curves
+## ...
+## approxes.all
+loadIndexes <- function(fname){
+  index.all <- lapply(dir(fname,
+                          pattern=".csv",full.names=T), read.csv, header=T)
+  names(index.all) <- dir(fname,pattern=".csv")
+  approxes.all <- lapply(index.all,
+                         function(cpt) {
+                           a <- lapply(2:ncol(cpt),function(i) approxfun(cpt[,1], cpt[,i], rule=2))
+                           names(a) <- names(cpt)[-1]
+                           a
+                         })
+  index.all <<- index.all
+  approxes.all <<- approxes.all
+}
+
+loadHydro <- function(fname,scenariolist){
+  library(zoo)
+  if(exists("all.hydroinputlist")){
+    warning("Already loaded. rm(all.hydroinputlist) to allow reloading")
+  } else {
+    cat("Loading hydrological data\n")
+    all.hydroinputlist <- NULL
+    for (s in scenariolist){
+      hydroinputlist <- lapply(dir(paste(fname, s, sep="/"), pattern=".csv", full.names=T),
+                               ##read.zoo, header=T, sep=",")
+                               read.zoo, header=T, sep=" ")
+      ##names(hydroinputlist) <- gsub(".csv","",dir(paste(fname, s, sep="/"), pattern=".csv"),fixed=T)
+      names(hydroinputlist) <- dir(paste(fname, s, sep="/"), pattern=".csv")
+      all.hydroinputlist[[s]] <- hydroinputlist
+    }
+  }
+  all.hydroinputlist <<- all.hydroinputlist
+}
+
+loadAssets <- function(fname){
+  asset.table <<- read.csv(fname, header=T)
+}
+
+green<- function() "#009246"
+red<- function() "#CE2B37"
+
+capwords<-
+function(s, strict = FALSE) {
+    cap <- function(s) paste(toupper(substring(s,1,1)),
+                         {s <- substring(s,2); if(strict) tolower(s) else s},
+                             sep = "", collapse = " " )
+    sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
+}
