@@ -1,5 +1,7 @@
 envindex.diff.qp <-
-function(...,scen,baseline,ecospecies,use.durs=FALSE){
+function(...,scen,baseline,ecospecies,use.durs=FALSE,
+         attribs.usesduration=c("timing"="duration","duration"="duration","dry"="duration")
+         ){
     sidx <- eventattrib.scen(...,scenario=scen)
     bidx <- eventattrib.scen(...,scenario=baseline)
 
@@ -16,7 +18,6 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE){
     ##TODO: some requested ctf values/scenarios will have no results transparently
     if(is.null(sidx) |is.null(bidx)) return(NULL)
     stopifnot(!is.null(sidx$events)) ## should only be a single result
-    attribs <- c("timing","duration","dry") ##TODO: move to argument
     all.prefs <- NULL
     ## Run for each dur
     for(use.dur in use.durs){
@@ -25,16 +26,21 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE){
             stopifnot(identical(bidx[c("assetid","ctf")],
                                 sidx[c("assetid","ctf")]
                                 ))
-            prefs <- lapply(attribs,function(attrib){
+            prefs <- lapply(names(attribs.usesduration),function(attrib){
                 ev <- list(bidx$events[[attrib]],
                            sidx$events[[attrib]])
                 cpt <- index.all[[sprintf("%s_%s.csv", species,attrib)]]
                 if(is.null(cpt)) return(NULL)
-                ## TODO: don't use dur for some attributes, e.g. gwlevel
-                if (use.dur) dur <- list(bidx$events$duration,
-                                         sidx$events$duration)
+                
+                ## Specify durations to be used to multiply index values
+                ##  if requested by use.dur and available in attribs.usesduration
+                which.dur <- attribs.usesduration[attrib]
+                if (use.dur & !is.na(which.dur))
+                  dur <- list(bidx$events[[which.dur]],
+                              sidx$events[[which.dur]])
                 else dur <- NULL
 
+                ## Calculate results for min-diff and max-diff preference curves
                 constr <- getPrefConstraints(species,attrib)
                 p.max <- lp.perf(cpt[,1],ev,bounds=constr$bounds,
                                  dir="max",constr=constr$constr,dur=dur)
@@ -50,7 +56,7 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE){
                        constr=constr
                        ))
             }) ## attrib
-            names(prefs) <- attribs
+            names(prefs) <- names(attribs.usesduration)
             prefs <- prefs[!sapply(prefs,is.null)]
             if(length(prefs)==0){
                 w.min=list(obj=NA)
