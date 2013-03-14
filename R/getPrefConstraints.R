@@ -25,3 +25,7 @@ function(species,attrib){
   constr <- constr[!is.na(constr$status),]
   list(constr=constr,bounds=bounds)
 }
+
+getWeightConstraints <- function(attribs){
+  list(constr=NULL,bounds=NULL)
+}

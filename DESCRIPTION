@@ -6,4 +6,5 @@ Date: 2013-03-12
 Author: Joseph Guillaume
 Maintainer: Joseph Guillaume <joseph.guillaume@anu.edu.au>
 Description: More about what it does (maybe more than one line)
+Depends: hydromad,lpSolveAPI
 License: What license is it under?
