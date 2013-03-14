@@ -1,6 +1,7 @@
 \name{envindex.bound}
 \alias{subset.envindex.bound}
 \alias{print.envindex.bound}
+\alias{plot.envindex.bound}
 \title{Methods for \code{envindex.bound} objects}
 \description{
 \code{envindex.bound} objects are produced by \code{envindex.diff.qp},
@@ -23,8 +24,10 @@ and can be printed, subsetted, plotted.
 Ignored}
 }
 \details{
-Plots preference curves for given \code{attribs}, with absolute
-constraints as background.
+Plots index curves for given \code{attribs}, with absolute
+constraints as background. The curve that yields maximum difference,
+such that \code{scenario-baseline>>0}, and \code{scenario>>baseline} is
+green. The minimum difference where \code{scenario<<baseline} is red.
 }
 \value{
 \code{data.frame} with columns assetid,ctf,species,diff.min,diff.max and use.dur

@@ -42,8 +42,8 @@ List of model runs with elements:
 \item{ctf}{}
 \item{species}{}
 \item{use.dur}{}
-\item{diff.min}{}
-\item{diff.max}{}
+\item{diff.min}{Minimum difference between scenarios, as \code{scen}-\code{baseline}}
+\item{diff.max}{Maximum difference between scenarios, as \code{scen}-\code{baseline}}
 \item{pars.min.weights}{Numeric vector of weights}
 \item{pars.min.attrib}{Numeric vector of ordinates of breakpoints for
   each attrib}
