@@ -112,7 +112,8 @@ tab <- do.call(rbind,lapply(subset(all.diffs,subset=!is.na(diff.min)),
 ## Convert to long form
 tabm <- melt(tab,id.var=c("assetid","ctf","species","use.dur"))
 ## Convert continuous variable to discrete - which scenario is favoured
-tabm$value <- ifelse(tabm$value>=0,"Scenario","Baseline")
+##tabm$value <- ifelse(tabm$value>=0,"Scenario","Baseline")
+tabm$value <- ifelse(tabm$value>0,"Scenario","Baseline or =")
 
 ## Check for uncertainty
 answers <- marginalise(tabm,assetid+species+ctf~.,verbose=T)
@@ -121,7 +122,7 @@ answers <- marginalise(tabm,assetid+species+ctf~.,verbose=T)
 
 ## Make variables more readable, and ordered
 answers$assetid <- ordered(answers$assetid,level=1:nrow(asset.table),label=asset.table$Name)
-answers$"(all)" <- ordered(answers$"(all)",level=c("Scenario","Uncertain","Baseline"))
+answers$"(all)" <- ordered(answers$"(all)",level=c("Scenario","Uncertain","Baseline or ="))
 lookup <- c("RRGMS"="River red\ngum MS",
             "RRGRR"="River red\ngum RR",
             "BBMS"="Black box\nMS",
@@ -160,7 +161,7 @@ ggplot(data=answers)+
                             ##Uncertain
                             "Uncertain"=rgb(241,242,241,maxColorValue=255),
                             ##Minus
-                            "Baseline"=red()
+                            "Baseline or ="=red()
                             ))+
     ylab("Species")+
     xlab("Commence-to-flow level (ML/day)")+
@@ -179,19 +180,7 @@ eg
 ## Show preference curves for min and max
 par(mfrow=c(3,1))
 plot(eg)
-eg[[1]]$pars.min.weights
-eg[[1]]$pars.max.weights
-
-## TODO: Timing and duration disagree
-
-do.call(rbind, lapply(subset(all.diffs,assetid==1 & species=="RRGMS" & ctf==5000),
-                      function(r)
-                      c(r[c("assetid", 
-                            "ctf", "species", "diff.min", "diff.max", "use.dur")],
-                        r$"pars.min.weights",
-                        r$pars.max.weights
-                        )))
-
+what.weights(eg)
 
 ################################################################################
 
