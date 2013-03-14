@@ -29,13 +29,15 @@ eventattrib.scen(scenario, assetid, ctf, gap = 2, mindur = 3)
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+  
 }
 \value{
   \item{assetid }{assetid input}
   \item{scenario}{scenario input}
-  \item{ctf}{Description of 'comp2}'
-  \item{events}{Description of 'comp2}'
+  \item{ctf}{Description of 'comp2}
+  \item{events}{List of of values for each attribute that will be used
+    by envindex.diff.qp. It must not contain NAs. Modify
+    \code{eventattrib.scen} to deal with NAs if necessary.}
 }
 \references{
 %% ~put references to the literature/web site here ~
