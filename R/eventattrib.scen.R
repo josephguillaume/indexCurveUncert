@@ -35,6 +35,11 @@ function(scenario,assetid,ctf,gap=2,mindur=3){
   if(!all(is.na(coredata(flowevent))))
     flowevent.attrib <- eventattrib(surfaceflow,flowevent,FUN=mean)
   else return(NULL)
+
+  ##gwlevel
+  gwlevel <- coredata(gwlevel)
+  ## TODO: better way of dealing with NAs?
+  gwlevel <- na.omit(gwlevel)
   
   list(
        ##input
@@ -42,7 +47,7 @@ function(scenario,assetid,ctf,gap=2,mindur=3){
        scenario=scenario,
        ctf=ctf,
        ##output
-       events=c(flowevent.attrib$ddd,list(gwlevel=coredata(gwlevel)))
+       events=c(flowevent.attrib$ddd,list(gwlevel=gwlevel))
        )
 
 }
