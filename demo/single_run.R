@@ -5,6 +5,8 @@ loadHydro("X:/phd/papers/namoi ua/Namoi model/Inputs EMS paper/",c("Pre90","Post
 loadAssets("X:/phd/papers/namoi ua/Namoi model/Inputs EMS paper/ctf_v4.csv")
 
 specieslist <- c("RRGMS", "RRGRR", "BBMS", "BBRR", "LGMS", "LGRR", "WCMS", "WCRR")
+attribs.usesduration = c(timing = "duration", duration = "duration", 
+                         dry = "duration",gwlevel=NA)
 
 ################################################################################
 
@@ -25,15 +27,22 @@ for(s in c("RRGRR","BBRR","LGRR")){
               c(Days=max.dry,rep(0.5,ncol(cpt)-1)))
 }
 
-
 ##Duration
 for(s in c("RRGMS", "RRGRR", "BBMS", "BBRR", "LGMS", "LGRR"))
     index.all[[sprintf("%s_%s.csv", s,"duration")]] <-
         rbind(index.all[[sprintf("%s_%s.csv", s,"duration")]],
               c(Days=1000,rep(NA,5)))
 
-checkAttributeRanges("Pre90",specieslist)
-checkAttributeRanges("Post90",specieslist)
+## Gwlevel
+## index.all[grep("gwlevel",names(index.all),value=T)]
+for(s in specieslist)
+    index.all[[sprintf("%s_%s.csv", s,"gwlevel")]] <-
+        rbind(index.all[[sprintf("%s_%s.csv", s,"gwlevel")]],
+              c(Level_m=30,0))
+
+checkAttributeRanges("Pre90",specieslist,attribs=names(attribs.usesduration))
+checkAttributeRanges("Post90",specieslist,attribs=names(attribs.usesduration))
+
 
 
 ################################################################################
@@ -43,7 +52,9 @@ st <- proc.time()
 xx <- envindex.diff.qp(scen="Pre90",baseline="Post90",
                        ecospecies=specieslist,
                        assetid=1,ctf=asset.table[1,7],
-                       use.durs=c(T,F))
+                       use.durs=c(T,F),
+                       attribs.usesduration = attribs.usesduration
+                       )
 proc.time()-st
 
 ## Printing shows data.frame of results and settings
@@ -67,3 +78,4 @@ subset(xx,subset=use.dur==TRUE)
 par(mfrow=c(4,2))
 plot(xx,attribs="duration",subset=use.dur==TRUE)
 
+what.weights(xx)
