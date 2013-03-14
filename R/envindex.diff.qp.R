@@ -26,11 +26,14 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
             stopifnot(identical(bidx[c("assetid","ctf")],
                                 sidx[c("assetid","ctf")]
                                 ))
+            ## For each attribute, get min and max preference curve results
             prefs <- lapply(names(attribs.usesduration),function(attrib){
+                ## For this attribute, extract events and current cpt (index curve abcissa)
                 ev <- list(bidx$events[[attrib]],
                            sidx$events[[attrib]])
                 cpt <- index.all[[sprintf("%s_%s.csv", species,attrib)]]
-                if(is.null(cpt)) return(NULL)
+                ##Attributes will not be considered if cpt is NULL
+                if(is.null(cpt)) return(NULL) 
                 
                 ## Specify durations to be used to multiply index values
                 ##  if requested by use.dur and available in attribs.usesduration
