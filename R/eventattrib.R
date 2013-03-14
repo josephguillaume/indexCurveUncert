@@ -11,6 +11,7 @@ function (X, events, FUN = mean,...)
     Monthstart = startTimeComponents$mon + 1  ## start time
     Duration = coredata(xLengths)
     DryPeriod = preInterEventDuration(events)
+    ## TODO: simplify return value
     return(list(
                 events=events,
                 xValues=xValues,
@@ -18,12 +19,16 @@ function (X, events, FUN = mean,...)
                 xLengths=xLengths,
                 midTimeComponents=midTimeComponents,
                 startTimeComponents=startTimeComponents,
-                Monthstart=Monthstart,
-                Duration=Duration,
-                DryPeriod=DryPeriod,
-                ddd=data.frame(StartTime = time(xValues), EndTime = time(xValuesend), Value = coredata(xValues), #EndTime new
-                  Yearmid = midTimeComponents$year + 1900, Monthstart = Monthstart,
-                  Duration = Duration, DryPeriod = DryPeriod
+                timing=Monthstart,
+                duration=Duration,
+                dry=DryPeriod,
+                ddd=list(StartTime = time(xValues),
+                  EndTime = time(xValuesend),
+                  Value = coredata(xValues), #EndTime new
+                  Yearmid = midTimeComponents$year + 1900,
+                  timing = Monthstart,
+                  duration = Duration,
+                  dry = DryPeriod
                   )
                 ))
 }

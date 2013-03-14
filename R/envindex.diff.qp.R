@@ -16,7 +16,7 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE){
     ##TODO: some requested ctf values/scenarios will have no results transparently
     if(is.null(sidx) |is.null(bidx)) return(NULL)
     stopifnot(!is.null(sidx$events)) ## should only be a single result
-    attrib.lookup <- c(timing = "Monthstart",duration = "Duration", dry = "DryPeriod")
+    attribs <- c("timing","duration","dry") ##TODO: move to argument
     all.prefs <- NULL
     ## Run for each dur
     for(use.dur in use.durs){
@@ -25,13 +25,14 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE){
             stopifnot(identical(bidx[c("assetid","ctf")],
                                 sidx[c("assetid","ctf")]
                                 ))
-            prefs <- lapply(names(attrib.lookup),function(attrib){
-                ev <- list(bidx$events[[attrib.lookup[attrib]]],
-                           sidx$events[[attrib.lookup[attrib]]])
+            prefs <- lapply(attribs,function(attrib){
+                ev <- list(bidx$events[[attrib]],
+                           sidx$events[[attrib]])
                 cpt <- index.all[[sprintf("%s_%s.csv", species,attrib)]]
                 if(is.null(cpt)) return(NULL)
-                if (use.dur) dur <- list(bidx$events$Duration,
-                                         sidx$events$Duration)
+                ## TODO: don't use dur for some attributes, e.g. gwlevel
+                if (use.dur) dur <- list(bidx$events$duration,
+                                         sidx$events$duration)
                 else dur <- NULL
 
                 constr <- getPrefConstraints(species,attrib)
@@ -49,7 +50,7 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE){
                        constr=constr
                        ))
             }) ## attrib
-            names(prefs) <- names(attrib.lookup)
+            names(prefs) <- attribs
             prefs <- prefs[!sapply(prefs,is.null)]
             if(length(prefs)==0){
                 w.min=list(obj=NA)
