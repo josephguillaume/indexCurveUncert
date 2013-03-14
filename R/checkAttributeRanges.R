@@ -10,9 +10,7 @@ checkAttributeRanges <- function(scenario,specieslist,attribs=c("duration","dry"
     ##ctf <- 1.25*max(ctfs)
     seq.ctfs <- seq(min(ctfs)*0.25,max(ctfs)*1.25,length.out=10)
     seq.ctfs <- sort(unique(c(seq.ctfs,as.numeric(ctfs))))
-    ## TODO: allow selection of ctf
-    ##ctf <- seq.ctfs[11]
-    ctf <- min(seq.ctfs)
+    ctf <- seq.ctfs[11]
     ##ctf <- max(seq.ctfs)
     ee <- eventattrib.scen(scenario=scenario,assetid=assetid,ctf=ctf)
     if(!is.null(ee)) maxes <-
