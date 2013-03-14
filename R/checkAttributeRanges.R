@@ -1,5 +1,5 @@
 
-checkAttributeRanges <- function(scenario){
+checkAttributeRanges <- function(scenario,specieslist){
   ## Check max values that cpts have to go to
   maxes <- NULL
   for(assetid in 1:nrow(asset.table)){

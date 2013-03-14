@@ -6,15 +6,20 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
   stopifnot(all(ev[[2]]<=max(xs)))
 
   nvar <- length(xs)
+  ## Add x indices of breakpoints to vals
   vals <- xs
   names(vals) <- sprintf("x%d",1:nvar-1)
   ##Calculate total diff. in attributes, and difference in num events
-  for(i in 1:(nvar-1)){
-      x <- sapply(1:length(ev),function(aidx) {
-          a <- ev[[aidx]]
+  for(i in 1:(nvar-1)){ ## For each piece-wise linear
+    ## Calculate A and n for all scenarios for this linear,
+    ##  each scenario in a column in order
+      x <- sapply(1:length(ev),function(aidx) { ##For each scenario
+          a <- ev[[aidx]] ##Attributes of each event
+          ## Indicate whether attributes are in this linear
           if(i==nvar-1) { in.ev <- a>=xs[i] & a<=xs[i+1]
                       } else { in.ev <- a>=xs[i] & a<xs[i+1] }
-          if(!is.null(dur)){
+          ## Calculate A and n for this scenarios for this linear
+          if(!is.null(dur)){ ##Multiply by duration if required
               o <- c(A=sum(a[in.ev]*dur[[aidx]][in.ev]),
                      n=sum(dur[[aidx]][in.ev]))
           } else { o <- c(sum(a[in.ev]),n=length(which(in.ev))) }
@@ -22,6 +27,7 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
           o
       })
       ##print(apply(x,1,diff))
+      ## Add dA,dN to vals, as 2nd scenario-1st scenario in ev
       vals <- c(vals,apply(x,1,diff))
   }
   ## Calculate objective function
