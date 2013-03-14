@@ -1,1 +1,6 @@
 exportPattern("^[[:alpha:]]+")
+
+S3method("[",envindex.bound)
+S3method(plot,envindex.bound)
+S3method(print,envindex.bound)
+S3method(subset,envindex.bound)
