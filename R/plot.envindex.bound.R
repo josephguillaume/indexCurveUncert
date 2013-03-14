@@ -19,7 +19,7 @@ function(x,y,...,attribs=NA,subset=T,
             constr <- getPrefConstraints(o$species,attrib)
             plot(cpt[,1],
                  o[[sprintf("pars.min.%s",attrib)]],
-                 type="l",col="red",
+                 type="l",col=red(),
                  ylab="Preference",ylim=c(0,1),
                  xlab=capwords(attrib),
                  lty="dashed",lwd=3
@@ -30,11 +30,11 @@ function(x,y,...,attribs=NA,subset=T,
                     border=NA)
             lines(cpt[,1],
                   o[[sprintf("pars.min.%s",attrib)]],
-                  type="l",col=red,lty="dashed",lwd=3
+                  type="l",col=red(),lty="dashed",lwd=3
                   )
             lines(cpt[,1],
                   o[[sprintf("pars.max.%s",attrib)]],
-                  type="l",col=green,lty="dotted",lwd=3
+                  type="l",col=green(),lty="dotted",lwd=3
                   )
             ## for(a in approxes.all[[sprintf("%s_%s.csv", o$species,tolower(attrib))]])
             ##     plot(a,from=min(cpt[,1]),to=max(cpt[,1]),col="grey",add=T)
