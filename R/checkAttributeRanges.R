@@ -1,5 +1,5 @@
 
-checkAttributeRanges <- function(scenario,specieslist){
+checkAttributeRanges <- function(scenario,specieslist,attribs=c("duration","dry")){
   ## Check max values that cpts have to go to
   maxes <- NULL
   for(assetid in 1:nrow(asset.table)){
@@ -15,8 +15,8 @@ checkAttributeRanges <- function(scenario,specieslist){
     ee <- eventattrib.scen(scenario=scenario,assetid=assetid,ctf=ctf)
     if(!is.null(ee)) maxes <-
       rbind(maxes,
-            data.frame(assetid=assetid,
-                       t(apply(ee$events[,c("Duration","DryPeriod")],2,max))))
+            data.frame(assetid=assetid,t(sapply(ee$events[attribs],max,na.rm=T)))
+            )
   }
   ##maxes
 
@@ -26,8 +26,10 @@ checkAttributeRanges <- function(scenario,specieslist){
     maxes.cpt <-
       rbind(maxes.cpt,
             data.frame(species=s,
-                       duration=max(index.all[[sprintf("%s_%s.csv", s,"duration")]][,1]),
-                       dry=max(index.all[[sprintf("%s_%s.csv", s,"dry")]][,1])))
+                       t(
+                         sapply(attribs,function(a)
+                                max(index.all[[sprintf("%s_%s.csv", s,a)]][,1],na.rm=T))
+                         )))
   ##maxes.cpt
   list(maxes,maxes.cpt)
 }
