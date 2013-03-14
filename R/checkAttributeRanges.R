@@ -17,7 +17,7 @@ checkAttributeRanges <- function(scenario,specieslist,attribs=c("duration","dry"
     ee <- eventattrib.scen(scenario=scenario,assetid=assetid,ctf=ctf)
     if(!is.null(ee)) maxes <-
       rbind(maxes,
-            data.frame(assetid=assetid,t(sapply(ee$events[attribs],max,na.rm=T)))
+            data.frame(assetid=assetid,ctf=ctf,t(sapply(ee$events[attribs],max,na.rm=T)))
             )
   }
   ##maxes
