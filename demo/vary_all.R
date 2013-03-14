@@ -5,6 +5,8 @@ loadHydro("X:/phd/papers/namoi ua/Namoi model/Inputs EMS paper/",c("Pre90","Post
 loadAssets("X:/phd/papers/namoi ua/Namoi model/Inputs EMS paper/ctf_v4.csv")
 
 specieslist <- c("RRGMS", "RRGRR", "BBMS", "BBRR", "LGMS", "LGRR", "WCMS", "WCRR")
+attribs.usesduration = c(timing = "duration", duration = "duration", 
+                         dry = "duration",gwlevel=NA)
 
 ################################################################################
 
@@ -32,6 +34,12 @@ for(s in c("RRGMS", "RRGRR", "BBMS", "BBRR", "LGMS", "LGRR"))
         rbind(index.all[[sprintf("%s_%s.csv", s,"duration")]],
               c(Days=1000,rep(NA,5)))
 
+## Gwlevel
+## index.all[grep("gwlevel",names(index.all),value=T)]
+for(s in specieslist)
+    index.all[[sprintf("%s_%s.csv", s,"gwlevel")]] <-
+        rbind(index.all[[sprintf("%s_%s.csv", s,"gwlevel")]],
+              c(Level_m=30,0))
 
 ################################################################################
 ## Vary all
@@ -48,7 +56,10 @@ clusterExport(cl,"index.all")
 clusterExport(cl,"approxes.all")
 clusterExport(cl,"asset.table")
 clusterExport(cl,"specieslist")
+clusterExport(cl,"attribs.usesduration")
+clusterEvalQ(cl,options(na.action="na.omit"))
 
+options(na.action="na.omit")
 start <- proc.time()
 all.diffs2 <-
   clusterApplyLB(cl,
@@ -66,7 +77,8 @@ all.diffs2 <-
                              envindex.diff.qp(scen="Post90",baseline="Pre90",
                                               ecospecies=specieslist,
                                               assetid=assetid,ctf=ctf,
-                                              use.durs=c(T,F)
+                                              use.durs=c(T,F),
+                                              attribs.usesduration = attribs.usesduration
                              ))
                      #print(proc.time()-st)
                    }

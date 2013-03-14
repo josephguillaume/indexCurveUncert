@@ -46,7 +46,16 @@ envindex.diff.qp(..., scen, baseline, ecospecies, use.durs = FALSE,attribs.usesd
 Calculates event attributes for both \code{scen} and
 \code{baseline}. Calculates minimum and maximum difference between
 scenarios, for each species and treating event attributes as means and
-sums, by varying preference curves within bounds defined by \code{getPrefConstraints} and varying weights within bounds defined by \code{getWeightConstraints}
+sums, by varying preference curves within bounds defined by
+\code{getPrefConstraints} and varying weights within bounds defined by
+\code{getWeightConstraints}.
+
+If there are NAs in the attributes returned by \code{eventattrib.scen}, they
+are processed using \code{getOption("na.action")}. Use \code{
+  options(na.action="na.fail")} to raise an error immediately if you do
+not expect any NAs. Using  \code{
+  options(na.action="na.omit")} treats \code{NA} events (or days) as not
+occuring. Do not use \code{na.pass} as it will cause hard-to-diagnose errors elsewhere. 
 }
 \value{
   Object of class \code{envindex.bound}

@@ -31,7 +31,7 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                 ## For this attribute, extract events and current cpt (index curve abcissa)
                 ev <- list(bidx$events[[attrib]],
                            sidx$events[[attrib]])
-                stopifnot(!any(is.na(ev)))
+                ev <- sapply(ev,get(getOption("na.action")))
                 cpt <- index.all[[sprintf("%s_%s.csv", species,attrib)]]
                 ##Attributes will not be considered if cpt is NULL
                 if(is.null(cpt)) return(NULL) 
