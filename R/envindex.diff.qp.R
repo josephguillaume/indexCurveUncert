@@ -80,9 +80,9 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
 
                 ## All model parameters
                 pars.min <- c(list(weights=w.min$ws),
-                              sapply(prefs,function(x) x$min$ys))
+                              lapply(prefs,function(x) x$min$ys))
                 pars.max <- c(list(weights=w.max$ws),
-                              sapply(prefs,function(x) x$max$ys))
+                              lapply(prefs,function(x) x$max$ys))
             }
             all.prefs <- c(all.prefs,list(c(sidx[c("assetid","ctf")],
                                             list(species=species,
