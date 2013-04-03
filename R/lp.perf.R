@@ -62,11 +62,13 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
   ## ## Relationship between breakpoint y values
   ## add.constraint(lprec,c(1,-1,0),"<",0)
   ## add.constraint(lprec,c(0,-1,1),"<",0)
-  for(i in 1:NROW(constr)){
-    cc <- rep(0,length(obj))
-    cc[constr[i,1]] <- 1
-    cc[constr[i,2]] <- -1
-    add.constraint(lprec,cc,constr[i,3],0)
+  if(NROW(constr)>0){
+    for(i in 1:NROW(constr)){
+      cc <- rep(0,length(obj))
+      cc[constr[i,1]] <- 1
+      cc[constr[i,2]] <- -1
+      add.constraint(lprec,cc,constr[i,3],0)
+    }
   }
   ##Set limits on y values
   ##set.bounds(lprec,upper=0.1,column=1)
