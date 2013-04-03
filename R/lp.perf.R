@@ -63,11 +63,15 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
   ## add.constraint(lprec,c(1,-1,0),"<",0)
   ## add.constraint(lprec,c(0,-1,1),"<",0)
   if(NROW(constr)>0){
+    ##1a-1b<>rhs = a<>b+rhs
+    ## If not specified, RHS of constraint is 0 (mainly for backward compatibility)
+    if(ncol(constr)==3) constr <- rbind(constr,0)
     for(i in 1:NROW(constr)){
       cc <- rep(0,length(obj))
       cc[constr[i,1]] <- 1
       cc[constr[i,2]] <- -1
-      add.constraint(lprec,cc,constr[i,3],0)
+      ## TODO: avoiding this function could give 50x speedup
+      add.constraint(lprec,cc,as.character(constr[i,3]),constr[i,4])
     }
   }
   ##Set limits on y values

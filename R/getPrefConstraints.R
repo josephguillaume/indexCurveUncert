@@ -36,6 +36,19 @@ getPrefConstraintsLists <- function(species,attrib){
   cpt.x <- index.all[[sprintf("%s_%s.csv", species,attrib)]][,1]
   nx <- length(cpt.x)
   constr <- NULL
+  if(!exists("pref.bounds")){
+    warning("pref.bounds not found, no bounds set")
+    pref.bounds <<- NULL
+  }
+  if(!exists("pref.monoton")){
+    warning("pref.monoton not found, no monotonicity constraints set")
+    pref.monoton <<- NULL
+  }
+  if(!exists("pref.comp")){
+    warning("pref.comp not found, no comparison constraints set")
+    pref.comp <<- NULL
+  }
+  
   ## Convert real-valued bounds
   bounds <- list(lower=rep(0,nx),upper=rep(1,nx))
   this.bounds <- pref.bounds[[sprintf("%s_%s.csv", species,attrib)]]
@@ -49,25 +62,36 @@ getPrefConstraintsLists <- function(species,attrib){
     }
   }
   ## Add monotonicity constraints
-  ## from min.x,max.x,dir
-  ## a-b>=0 -> a>b (dir=1 = a>b, dir=-1 = a<b)
+  ## from min.x,max.x,dir,min.step
+  ## a-b>=min.step -> a>b+min.step (dir=1 = a>b, dir=-1 = a<b)
   this.monoton <- pref.monoton[[sprintf("%s_%s.csv", species,attrib)]]
   if(!is.null(this.monoton)){
+    ## Default to non-strict monotonicity
+    if(is.null(this.monoton$min.step)) this.monoton$min.step <- 0
     for(i in 1:nrow(this.monoton)){
       w.x <- which(cpt.x>=this.monoton$min.x[i] & cpt.x<=this.monoton$max.x[i])
-      cc <- cbind(expand.grid(a=w.x,b=w.x),status=ifelse(this.monoton$dir[i]==1,">","<"))
+      cc <- cbind(expand.grid(a=w.x,b=w.x),
+                  status=ifelse(this.monoton$dir[i]==1,">","<"),
+                  ## TODO: min.step should be slope - need to be independent of breakpoint x values
+                  min.gap=this.monoton$dir[i]*this.monoton$min.step[i]
+                  )
       cc <- cc[cc[,1]>cc[,2],]
       constr <- rbind(constr,cc)
     }
   }
   ## Add comparison constraints
-  ## from min.x1,max.x1,min.x2,max.x2,dir
+  ## from min.x1,max.x1,min.x2,max.x2,dir,min.gap
   this.comp <- pref.comp[[sprintf("%s_%s.csv", species,attrib)]]
   if(!is.null(this.comp)){
+    ## Default to weak comparison
+    if(is.null(this.comp$min.gap)) this.comp$min.gap <- 0
     for(i in 1:nrow(this.comp)){
       w.x1 <- which(cpt.x>=this.comp$min.x1[i] & cpt.x<=this.comp$max.x1[i])
       w.x2 <- which(cpt.x>=this.comp$min.x2[i] & cpt.x<=this.comp$max.x2[i])
-      cc <- cbind(expand.grid(a=w.x1,b=w.x2),status=this.comp$dir[i])
+      cc <- cbind(expand.grid(a=w.x1,b=w.x2),
+                  status=this.comp$dir[i],
+                  min.gap=-this.comp$min.gap[i]
+                  )
       constr <- rbind(constr,cc)
     }
   }
