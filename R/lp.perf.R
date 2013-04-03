@@ -65,7 +65,7 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
   if(NROW(constr)>0){
     ##1a-1b<>rhs = a<>b+rhs
     ## If not specified, RHS of constraint is 0 (mainly for backward compatibility)
-    if(ncol(constr)==3) constr <- rbind(constr,0)
+    if(ncol(constr)==3) constr <- cbind(constr,0)
     for(i in 1:NROW(constr)){
       cc <- rep(0,length(obj))
       cc[constr[i,1]] <- 1
