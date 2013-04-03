@@ -5,6 +5,14 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
     sidx <- eventattrib.scen(...,scenario=scen)
     bidx <- eventattrib.scen(...,scenario=baseline)
 
+    if(!exists("getPrefConstraints")){
+      warning("function getPrefConstraints not set, using getPrefConstraintsMultIndex")
+      assign("getPrefConstraints",getPrefConstraintsMultIndex,env=.GlobalEnv)
+    }
+    if(!exists("getWeightConstraints")){
+      warning("function getWeightConstraints not set, using getWeightConstraintsNull")
+      assign("getWeightConstraints",getWeightConstraintsNull,env=.GlobalEnv)
+    }
 
     if(!is.character(scen)) {
         flow.scen <- scen

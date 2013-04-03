@@ -11,7 +11,7 @@ function(species,attrib){
   ss <- expand.grid(1:nrow(cpt),1:nrow(cpt))
   ss <- ss[ss[,1]!=ss[,2],]
   constr <- do.call(rbind,apply(ss,1,function(x) cpt[x[1],-1,drop=F]-cpt[x[2],-1,drop=F]))
-  constr <- ifelse(constr>=0,">","<")
+  constr <- ifelse(constr>=0,">=","<=")
   constr <- data.frame( ##a=cpt[ss[,1],1],
                        ##b=cpt[ss[,2],1],
                        a=ss[,1],
@@ -26,9 +26,7 @@ function(species,attrib){
   list(constr=constr,bounds=bounds)
 }
 
-getPrefConstraints <- getPrefConstraintsMultIndex
-
-getWeightConstraints <- function(attribs){
+getWeightConstraintsNull <- function(attribs){
   list(constr=NULL,bounds=NULL)
 }
 
@@ -71,7 +69,7 @@ getPrefConstraintsLists <- function(species,attrib){
     for(i in 1:nrow(this.monoton)){
       w.x <- which(cpt.x>=this.monoton$min.x[i] & cpt.x<=this.monoton$max.x[i])
       cc <- cbind(expand.grid(a=w.x,b=w.x),
-                  status=ifelse(this.monoton$dir[i]==1,">","<"),
+                  status=ifelse(this.monoton$dir[i]==1,">=","<="),
                   ## TODO: min.step should be slope - need to be independent of breakpoint x values
                   min.gap=this.monoton$dir[i]*this.monoton$min.step[i]
                   )
