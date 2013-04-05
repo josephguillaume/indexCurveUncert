@@ -9,11 +9,13 @@ function(p,dir,bounds=NULL,constr=NULL){
   set.bounds(lprec,upper=rep(1,length(p)),lower=rep(0,length(p)))
   ## Relationship between weights
   if(!is.null(constr)){
+    ## If not specified, RHS of constraint is 0 (mainly for backward compatibility)
+    if(ncol(constr)==3) constr <- cbind(constr,0)
     for(i in 1:NROW(constr)){
       cc <- rep(0,length(p))
       cc[constr[i,1]] <- 1
       cc[constr[i,2]] <- -1
-      add.constraint(lprec,cc,constr[i,3],0)
+      add.constraint(lprec,cc,constr[i,3],constr[i,4])
     }
   }
   ## Bounds on weights
