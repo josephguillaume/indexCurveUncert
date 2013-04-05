@@ -98,17 +98,35 @@ getPrefConstraintsLists <- function(species,attrib){
               bounds=bounds))
 }
 
-cachePreferences <- function(){
+cachePreferences <- function(index.names,replace=F){
   if(!exists("cached.pref")) cached.pref <<- list()
-  new.cached.pref <- lapply(names(index.all),
+  new.cached.pref <- lapply(index.names,
                             function(nn){
                               nn <- gsub(".csv","",nn,fixed=T)
                               nn <- strsplit(nn,"_")[[1]]
                               getPrefConstraints(nn[1],nn[2])
                             })
-  names(new.cached.pref) <- names(index.all)
-  if(length(intersect(names(cached.pref),names(new.cached.pref))!=0))
-    stop("Already have cached constraints for some indexes, merging not currently supported")
+  names(new.cached.pref) <- index.names
+  if(!replace & length(intersect(names(cached.pref),names(new.cached.pref))!=0))
+    stop("Already have cached constraints for some indexes and replace=F, merging not currently supported")
   ## TODO: support merging
   cached.pref <<- modifyList(cached.pref,new.cached.pref)
 }
+
+## Caching to avoid recomputation from lists
+## Combine outputs from cache and backup
+
+getPrefConstraintsCached <- function(species,attrib,backup=NA){
+  constr <- cached.pref[[sprintf("%s_%s.csv", species,attrib)]]
+  if(is.null(constr) & is.function(backup)) constr <- backup(species,attrib)
+  constr
+}
+## If not found, use no constraints
+##getPrefConstraints <- getPrefConstraintsCached
+## If not found, raise error
+## getPrefConstraints <- function(...)
+##   getPrefConstraintsCached(...,
+##                            backup=function(...) stop("Not found"))
+## If not found, use lists
+## getPrefConstraints <- function(...)
+##   getPrefConstraintsCached(...,backup=getPrefConstraintsLists)

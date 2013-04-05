@@ -12,8 +12,6 @@ index.all$test_gwlevel.csv <- data.frame(X1=c(seq(0,30,length.out=100)))
 index.all$test_timing.csv <- data.frame(X1=1:12)
 
 ## 3. Set pref constraints method
-## TODO: caching to avoid recomputation from lists
-## TODO: utility functions to combine outputs from multiple methods?
 getPrefConstraints <- getPrefConstraintsLists
 
 ## 2. specify scenarios to run and results to print
