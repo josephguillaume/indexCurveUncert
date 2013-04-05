@@ -33,6 +33,8 @@ getWeightConstraintsNull <- function(attribs){
 
 getWeightConstraintsLists <- function(attribs){
   constr <- NULL
+  bounds <- list(lower=rep(0,length(attribs)),
+                 upper=rep(1,length(attribs)))
   if(exists("weight.comp")) {
     constr <- weight.comp
     ## TODO: allow others?
@@ -40,9 +42,17 @@ getWeightConstraintsLists <- function(attribs){
     constr[,1] <- match(constr[,1],attribs)
     constr[,2] <- match(constr[,2],attribs)
     constr[,4] <- constr[,4]*ifelse(constr[,3]=="<=",-1,1)
-  }                      
+  }
+  if(exists("weight.bounds")){
+    for(i in 1:nrow(weight.bounds)){
+      w.a <- which(attribs==weight.bounds[i,1])
+      ## Keep tighter bounds
+      bounds$lower[w.a] <- max(bounds$lower[w.a],weight.bounds[i,2],na.rm=T)
+      bounds$upper[w.a] <- min(bounds$upper[w.a],weight.bounds[i,3],na.rm=T)
+    }
+  }
   list(constr=constr,
-       bounds=NULL)
+       bounds=bounds)
 }
 
 
