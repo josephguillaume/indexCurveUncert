@@ -62,6 +62,10 @@ getPrefConstraintsLists <- function(species,attrib){
     warning("pref.comp not found, no comparison constraints set")
     pref.comp <<- NULL
   }
+  if(!exists("pref.smooth")){
+    warning("pref.smooth not found, no smoothness constraints set")
+    pref.comp <<- NULL
+  }
   
   ## Convert real-valued bounds
   bounds <- list(lower=rep(0,nx),upper=rep(1,nx))
@@ -93,6 +97,24 @@ getPrefConstraintsLists <- function(species,attrib){
       constr <- rbind(constr,cc)
     }
   }
+  ## Add smoothness constraints
+  ## min.step*(xb-xa)<=a-b<=max.step*(xb-xa)
+  this.smooth <- pref.smooth[[sprintf("%s_%s.csv", species,attrib)]]
+  if(!is.null(this.smooth)){
+    for(i in 1:nrow(this.smooth)){
+      w.x <- which(cpt.x>=this.smooth$min.x[i] & cpt.x<=this.smooth$max.x[i])
+      ## Max slope ya-yb<=min.step, xa>xb
+      cc1 <- cbind(expand.grid(a=w.x,b=w.x),status="<=")
+      cc1$min.gap=this.smooth$max.step*(cpt.x[cc1$a]-cpt.x[cc1$b])
+      cc1 <- cc1[cc1[,1]>cc1[,2],]
+      ## Min slope ya-yb>=min.step, xa>xb
+      cc2 <- cbind(expand.grid(a=w.x,b=w.x),status=">=")
+      cc2$min.gap=this.smooth$min.step*(cpt.x[cc2$a]-cpt.x[cc2$b])
+      cc2 <- cc2[cc2[,1]>cc2[,2],]
+      constr <- rbind(constr,cc1,cc2)
+    }
+  }
+  
   ## Add comparison constraints
   ## from min.x1,max.x1,min.x2,max.x2,dir,min.gap
   this.comp <- pref.comp[[sprintf("%s_%s.csv", species,attrib)]]
