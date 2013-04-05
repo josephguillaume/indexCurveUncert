@@ -97,3 +97,18 @@ getPrefConstraintsLists <- function(species,attrib){
   return(list(constr=constr,
               bounds=bounds))
 }
+
+cachePreferences <- function(){
+  if(!exists("cached.pref")) cached.pref <<- list()
+  new.cached.pref <- lapply(names(index.all),
+                            function(nn){
+                              nn <- gsub(".csv","",nn,fixed=T)
+                              nn <- strsplit(nn,"_")[[1]]
+                              getPrefConstraints(nn[1],nn[2])
+                            })
+  names(new.cached.pref) <- names(index.all)
+  if(length(intersect(names(cached.pref),names(new.cached.pref))!=0))
+    stop("Already have cached constraints for some indexes, merging not currently supported")
+  ## TODO: support merging
+  cached.pref <<- modifyList(cached.pref,new.cached.pref)
+}
