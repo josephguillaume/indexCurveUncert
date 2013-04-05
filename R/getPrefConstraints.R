@@ -146,3 +146,24 @@ getPrefConstraintsCached <- function(species,attrib,backup=NA){
 ## If not found, use lists
 ## getPrefConstraints <- function(...)
 ##   getPrefConstraintsCached(...,backup=getPrefConstraintsLists)
+
+## Return combination of cached and new extra
+getPrefConstraintsMergeWithCache <- function(species,attrib,extra){
+  constr <- cached.pref[[sprintf("%s_%s.csv", species,attrib)]]
+  constr2 <- extra(species,attrib)
+  ## If none, just return extra
+  if(is.null(constr)) return(constr2)
+  ## Add min.gap column if missing
+  if(ncol(constr$constr)==3)
+    constr$constr <- cbind(constr$constr,min.gap=0)
+  if(!is.null(constr2$constr) && ncol(constr2$constr)==3)
+    constr2$constr <- cbind(constr2$constr,min.gap=0)
+  ## Keep the tighter of the bounds
+  constr$bounds$lower <- pmax(constr$bounds$lower,constr2$bounds$lower,na.rm=T)
+  constr$bounds$upper <- pmin(constr$bounds$upper,constr2$bounds$upper,na.rm=T)
+  ## Keep all constr
+  constr$constr <- rbind(constr$constr,constr2$constr)
+  constr
+}
+## getPrefConstraints <- function(...)
+##   getPrefConstraintsMergeWithCache(...,extra=getPrefConstraintsLists)
