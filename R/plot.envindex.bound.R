@@ -36,6 +36,7 @@ function(x,y,...,attribs=NA,subset=T,
                   o[[sprintf("pars.max.%s",attrib)]],
                   type="l",col=green(),lty="dotted",lwd=3
                   )
+            abline(v=cpt[,1],lty="dashed",col="grey")
             ## for(a in approxes.all[[sprintf("%s_%s.csv", o$species,tolower(attrib))]])
             ##     plot(a,from=min(cpt[,1]),to=max(cpt[,1]),col="grey",add=T)
             ##segments(x0=cpt[,1],x1=cpt[,1],y0=constr$bounds$lower,y1=constr$bounds$upper)
