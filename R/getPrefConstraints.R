@@ -30,6 +30,22 @@ getWeightConstraintsNull <- function(attribs){
   list(constr=NULL,bounds=NULL)
 }
 
+
+getWeightConstraintsLists <- function(attribs){
+  constr <- NULL
+  if(exists("weight.comp")) {
+    constr <- weight.comp
+    ## TODO: allow others?
+    stopifnot(all(constr[,3] %in% c("<=",">=")))
+    constr[,1] <- match(constr[,1],attribs)
+    constr[,2] <- match(constr[,2],attribs)
+    constr[,4] <- constr[,4]*ifelse(constr[,3]=="<=",-1,1)
+  }                      
+  list(constr=constr,
+       bounds=NULL)
+}
+
+
 getPrefConstraintsLists <- function(species,attrib){
   cpt.x <- index.all[[sprintf("%s_%s.csv", species,attrib)]][,1]
   nx <- length(cpt.x)

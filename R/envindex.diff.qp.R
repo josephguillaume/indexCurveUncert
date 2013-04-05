@@ -10,8 +10,8 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
       assign("getPrefConstraints",getPrefConstraintsMultIndex,env=.GlobalEnv)
     }
     if(!exists("getWeightConstraints")){
-      warning("function getWeightConstraints not set, using getWeightConstraintsNull")
-      assign("getWeightConstraints",getWeightConstraintsNull,env=.GlobalEnv)
+      warning("function getWeightConstraints not set, using getWeightConstraintsLists")
+      assign("getWeightConstraints",getWeightConstraintsLists,env=.GlobalEnv)
     }
 
     if(!is.character(scen)) {
