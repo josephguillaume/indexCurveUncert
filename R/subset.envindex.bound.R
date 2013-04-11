@@ -22,3 +22,9 @@ as.data.frame.envindex.bound <- function(x,row.names=NULL,optional=FALSE,...){
   ##keep.cols <- c("assetid","ctf","species","diff.min","diff.max","use.dur")
   do.call(rbind,lapply(x,function(r) as.data.frame(r[keep.cols])))
 }
+
+c.envindex.bound <- function(...,recursive=FALSE) {
+    y <- NextMethod("c")
+    class(y) <- c("envindex.bound",class(y))
+    y
+}
