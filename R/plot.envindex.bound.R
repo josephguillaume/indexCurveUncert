@@ -60,7 +60,7 @@ plot.unique.prefs <- function(diffs,attrib,ncol=4){
                                                attrib)])))
   diffs <- diffs[!del]
   cat(sprintf("Unique preference curves: %d\n",NROW(diffs)))
-  par(mfrow=c(ceiling(NROW(diffs)/ncol),ncol))
+  if(!is.na(ncol)) par(mfrow=c(ceiling(NROW(diffs)/ncol),ncol))
   plot(diffs,attribs=attrib)
   invisible(diffs)
 }
