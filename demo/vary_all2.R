@@ -97,65 +97,16 @@ pref.monoton$RRGMS_gwlevel.csv <- data.frame(min.x=5,max.x=12,dir=-1,min.step=0)
 attribs.usesduration = c(timing = "duration", duration = "duration", 
                          dry = "duration",gwlevel=NA)
 
-library(reshape)
-library(ggplot2)
 
-library(snow)
+## CTF values to be used are returned by getSeqCtfs function
+##lapply(1:nrow(asset.table),getSeqCtfs)
 
-cl <- makeCluster(3, type = "SOCK")
-clusterEvalQ(cl,library(indexCurveUncert))
-
-toexport <- c("all.hydroinputlist","asset.table", ##Hydro essentials
-              "index.all","attribs.usesduration", ##Index essentials
-              "pref.bounds","pref.smooth","pref.comp","pref.monoton", ##getPrefConstraintsLists
-              "weight.bounds","weight.comp", ##getWeightConstraintsLists
-              "getWeightConstraints","getPrefConstraints", ## User overrides of default
-              "cached.pref", #getPrefConstraintsCached,getPrefConstraintsMergeWithCache
-              "approxes.all" #getPrefConstraintsMultIndex
-              )
-setdiff(ls(),toexport) ##what won't be exported
-toexport <- intersect(toexport,ls())
-for(o in toexport) clusterExport(cl,o)
-
-clusterExport(cl,"specieslist")
-
-
-start <- proc.time()
-all.diffs2 <-
-  clusterApplyLB(cl,
-                 1:nrow(asset.table),
-                 function(assetid){
-                   ctfs <- asset.table[assetid,4:6]
-                   seq.ctfs <- seq(min(ctfs)*0.25,max(ctfs)*1.25,length.out=10)
-                   ##seq.ctfs <- ctfs[2]
-                   seq.ctfs <- sort(unique(c(seq.ctfs,as.numeric(ctfs))))
-                   all.diffs <- NULL
-                   for(ctf in seq.ctfs){ ##9 sec each
-                     #st <- proc.time()
-                     all.diffs <-
-                       c(all.diffs,
-                             envindex.diff.qp(scen="Post90",baseline="Pre90",
-                                              ecospecies=specieslist,
-                                              assetid=assetid,ctf=ctf,
-                                              use.durs=c(T,F),
-                                              attribs.usesduration = attribs.usesduration
-                             ))
-                     #print(proc.time()-st)
-                   }
-                   all.diffs
-                 })
-proc.time()-start
-## laptop 510 sec=8.5min
-## 7 assets * 10 ctfs * 9 sec = 10.5 min
-## 19*7*(1-.39)*n = time for n ctf levels
-## t/(19*7*(1-.39)) num ctf levels in t seconds
-## (7*10*19-510)/(7*10*19) = 39% speedup
-
-stopCluster(cl)
-
-all.diffs <- do.call(c,all.diffs2)
-class(all.diffs) <- c("envindex.bound",class(all.diffs))
-
+all.diffs <- vary_all(scen="Post90",baseline="Pre90",ecospecies=specieslist,
+                      use.durs=c(T,F),
+                      attribs.usesduration=attribs.usesduration,
+                      assets=1:nrow(asset.table),getSeqCtfs=getSeqCtfs10
+                      )
+##124 sec
 
 ##save(all.diffs,file="vary_all_qp.Rdata")
 
@@ -247,3 +198,16 @@ plot.unique.prefs(subset(all.diffs,species=="RRGMS"),"duration",ncol=NA)
 
 
 
+################################################################################
+
+## Redo without gwlevel for WCRR
+## TODO: caching of attributes to speed up recalc of prefs
+index.all$WCRR_gwlevel.csv <- NULL
+all.diffs <- redo_diffs(all.diffs,ecospecies="WCRR",
+                        scen="Post90",baseline="Pre90",
+                        use.durs=c(T,F),
+                        attribs.usesduration=attribs.usesduration,
+                        assets=1:nrow(asset.table),getSeqCtfs=getSeqCtfs10
+                        )
+eg <- subset(all.diffs,assetid==8 & species=="WCRR" & ctf==2000)
+what.weights(eg)
