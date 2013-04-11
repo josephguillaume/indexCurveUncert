@@ -50,3 +50,17 @@ function(x,y,...,attribs=NA,subset=T,
         }
     }
 }
+
+
+
+plot.unique.prefs <- function(diffs,attrib,ncol=4){
+  del <- duplicated(lapply(diffs,function(x)
+                           do.call(c,x[sprintf("pars.%s.%s",
+                                               c("max","min"),
+                                               attrib)])))
+  diffs <- diffs[!del]
+  cat(sprintf("Unique preference curves: %d\n",NROW(diffs)))
+  par(mfrow=c(ceiling(NROW(diffs)/ncol),ncol))
+  plot(diffs,attribs=attrib)
+  invisible(diffs)
+}
