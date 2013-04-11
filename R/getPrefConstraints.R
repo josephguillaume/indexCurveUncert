@@ -74,7 +74,7 @@ getPrefConstraintsLists <- function(species,attrib){
   }
   if(!exists("pref.smooth")){
     warning("pref.smooth not found, no smoothness constraints set")
-    pref.comp <<- NULL
+    pref.smooth <<- NULL
   }
   
   ## Convert real-valued bounds
