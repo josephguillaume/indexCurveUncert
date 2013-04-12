@@ -48,7 +48,8 @@ dayPrefsDur <- function(xx,dir,idx,attrib,attribs.usesduration){
   }  else{ ## Treat values as total across days -> split
     ff <- run.pref(xx,attrib,dir=dir)
     pp <- unlist(lapply(1:length(idx$events[[attrib]]),
-                        function(i) rep(ff(idx$events[[attrib]][i]),idx$events[[which.dur]][i])))
+                        function(i) rep(ff(idx$events[[attrib]][i])/idx$events[[which.dur]][i],
+                                        idx$events[[which.dur]][i])))
     pp <- c(rep(0,ndays-length(pp)),pp)    
   }
   pp
