@@ -57,3 +57,14 @@ suit.exceed.diff2 <- function(xx,attribs.usesduration,...){
   for(x in rmax) suit.exceed.diff(x$pd.s,x$pd.b,add=T)
   for(x in rmin) suit.exceed.diff(x$pd.s,x$pd.b,add=T)  
 }
+
+## Add diff.q50 value
+set.diff.q <- function(xx,pr.ex){
+  for(i in 1:length(xx)){
+    rs <- run.scen(xx[[i]],dir="max",attribs.usesduration)
+    xx[[i]]$max.diff.q <- quantile(rs$pd.s,1-pr.ex)-quantile(rs$pd.b,1-pr.ex)
+    rs <- run.scen(xx[[i]],dir="min",attribs.usesduration)
+    xx[[i]]$min.diff.q <- quantile(rs$pd.s,1-pr.ex)-quantile(rs$pd.b,1-pr.ex)
+  }
+  xx
+}
