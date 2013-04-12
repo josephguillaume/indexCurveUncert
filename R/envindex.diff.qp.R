@@ -107,3 +107,11 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
     invisible(all.prefs)
     ##do.call(rbind,lapply(all.prefs,function(x) x[c("assetid","ctf","species","diff.min","diff.max")]))
 }
+
+
+envindex.diff.getdata <-
+function(...,scen,baseline,ecospecies,use.durs=FALSE,attribs.usesduration)
+         ){
+    sidx <<- eventattrib.scen(...,scenario=scen)
+    bidx <<- eventattrib.scen(...,scenario=baseline)
+  }
