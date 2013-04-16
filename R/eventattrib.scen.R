@@ -15,7 +15,7 @@ function(scenario,assetid,ctf,gap=2,mindur=3){
     gwlevel <- all.hydroinputlist[[scenario]]$gwlevel.csv
     ##first column is associated with first asset and so on.
     if (!is.null(gwlevel)) gwlevel <- gwlevel[,assetid]
-    
+
   } else if(is.zoo(scenario)){
     surfaceflow <- scenario
     baseflow <- NULL
@@ -40,13 +40,14 @@ function(scenario,assetid,ctf,gap=2,mindur=3){
   gwlevel <- coredata(gwlevel)
   ## TODO: better way of dealing with NAs?
   gwlevel <- na.omit(gwlevel)
-  
+
   list(
        ##input
        assetid=assetid,
        scenario=scenario,
        ctf=ctf,
        ##output
+       ndays=length(surfaceflow),
        events=c(flowevent.attrib$ddd,list(gwlevel=gwlevel))
        )
 

@@ -1,6 +1,7 @@
 envindex.diff.qp <-
 function(...,scen,baseline,ecospecies,use.durs=FALSE,
-         attribs.usesduration=c("timing"="duration","duration"="duration","dry"="duration")
+         attribs.usesduration=c("timing"="duration","duration"="duration","dry"="duration"),
+         calc.mean=FALSE
          ){
     sidx <- eventattrib.scen(...,scenario=scen)
     bidx <- eventattrib.scen(...,scenario=baseline)
@@ -42,8 +43,8 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                 lapply(ev,na.fail)
                 cpt <- index.all[[sprintf("%s_%s.csv", species,attrib)]]
                 ##Attributes will not be considered if cpt is NULL
-                if(is.null(cpt)) return(NULL) 
-                
+                if(is.null(cpt)) return(NULL)
+
                 ## Specify durations to be used to multiply index values
                 ##  if requested by use.dur and available in attribs.usesduration
                 which.dur <- attribs.usesduration[attrib]
@@ -51,6 +52,12 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                   dur <- list(bidx$events[[which.dur]],
                               sidx$events[[which.dur]])
                 else dur <- NULL
+
+                ## Divide total by number of days
+                if(calc.mean){
+                    if(is.null(dur)) dur <- list(rep(1/bidx$ndays,length(bidx$events)),rep(1/sidx$ndays,length(sidx$events)))
+                    else dur <- list(dur[[1]]/bidx$ndays,dur[[2]]/sidx$ndays)
+                }
 
                 ## Calculate results for min-diff and max-diff preference curves
                 constr <- getPrefConstraints(species,attrib)
