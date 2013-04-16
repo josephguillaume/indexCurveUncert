@@ -2,8 +2,9 @@ lp.perf <-
 function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
   library(lpSolveAPI)
   stopifnot(is.null(dur) | identical(sapply(ev,length),sapply(dur,length)))
-  stopifnot(all(ev[[1]]<=max(xs)))
-  stopifnot(all(ev[[2]]<=max(xs)))
+  if(!all(ev[[1]]<=max(xs))|!all(ev[[2]]<=max(xs)))
+      stop(sprintf("Maximum attribute value of events (%.2f) is not less than or equal to maximum x value of index curve (%.2f)",
+                   max(c(ev[[1]],ev[[2]])),max(xs)))
 
   nvar <- length(xs)
   ## Add x indices of breakpoints to vals
