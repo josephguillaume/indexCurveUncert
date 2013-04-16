@@ -5,7 +5,7 @@ loadHydro("X:/phd/papers/namoi ua/Namoi model/Inputs EMS paper/",c("Pre90","Post
 loadAssets("X:/phd/papers/namoi ua/Namoi model/Inputs EMS paper/ctf_v4.csv")
 
 specieslist <- c("RRGMS", "RRGRR", "BBMS", "BBRR", "LGMS", "LGRR", "WCMS", "WCRR")
-attribs.usesduration = c(timing = "duration", duration = "duration", 
+attribs.usesduration = c(timing = "duration", duration = "duration",
                          dry = "duration",gwlevel=NA)
 
 ################################################################################
@@ -79,3 +79,8 @@ par(mfrow=c(4,2))
 plot(xx,attribs="duration",subset=use.dur==TRUE)
 
 what.weights(xx)
+
+## What weights would make the result certain?
+## obtain individual
+rr <- run.scen(xx,dir="max",attribs.usesduration)
+plot.weight.classes(sapply(rr$pp.s,sum)-sapply(rr$pp.b,sum))
