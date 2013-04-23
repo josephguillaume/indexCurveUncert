@@ -31,7 +31,8 @@ function(scenario,assetid,ctf,gap=2,mindur=3,cache.attribs=FALSE){
   } else {stop("Object has unexpected class")}
 
   if(cache.attribs & !exists("attrib.cache")) attrib.cache <<- list()
-  if(!cache.attribs | is.null(attrib.cache[[scenario]])){
+  ## If not using caching or run isn't in cache. is.null is only checked if cache.attribs
+  if(!cache.attribs | (cache.attribs && is.null(attrib.cache[[scenario]]))){
   
     ## Flood events
     flowevent <- eventseq(surfaceflow, thresh = ctf, mingap = gap, mindur=mindur)
@@ -53,9 +54,9 @@ function(scenario,assetid,ctf,gap=2,mindur=3,cache.attribs=FALSE){
                 ndays=length(surfaceflow),
                 events=c(flowevent.attrib$ddd,list(gwlevel=gwlevel))
                 )
-    if(cache.attribs)     attrib.cache[[scenario]] <- res
+    if(cache.attribs)     attrib.cache[[scenario]] <<- res
     return(res)
-  } else if (cache.attribs & !is.null(attrib.cache[[scenario]])){
+  } else if (cache.attribs && !is.null(attrib.cache[[scenario]])){
     return(attrib.cache[[scenario]])
   } else {
     stop("Unexpected cache.attribs state")
