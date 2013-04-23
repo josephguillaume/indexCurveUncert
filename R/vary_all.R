@@ -5,7 +5,7 @@ getSeqCtfs10 <- function(assetid) {
   seq.ctfs <- sort(unique(c(seq.ctfs,as.numeric(ctfs))))
 }
 
-vary_all <- function(assets,do.par=T,getSeqCtfs,...){
+vary_all <- function(assets,do.par=T,getSeqCtfs,cache.attribs=T,...){
   seq.ctfs <- lapply(assets,getSeqCtfs)
   if (!do.par){
     cat("Starting runs\n")
@@ -38,7 +38,8 @@ vary_all <- function(assets,do.par=T,getSeqCtfs,...){
                   "weight.bounds","weight.comp", ##getWeightConstraintsLists
                   "getWeightConstraints","getPrefConstraints", ## User overrides of default
                   "cached.pref", #getPrefConstraintsCached,getPrefConstraintsMergeWithCache
-                  "approxes.all" #getPrefConstraintsMultIndex
+                  "approxes.all", #getPrefConstraintsMultIndex
+                  "attrib.cache" # eventattrib.scen
                   )
     ##setdiff(ls(),toexport) ##what won't be exported
     toexport <- intersect(toexport,ls(envir=.GlobalEnv))
@@ -62,10 +63,20 @@ vary_all <- function(assets,do.par=T,getSeqCtfs,...){
                          ##print(proc.time()-st)
                        }
                        all.diffs
-                     },seq.ctfs=seq.ctfs,...)
+                     },seq.ctfs=seq.ctfs,cache.attribs=cache.attribs,...)
     cat("Finished runs\n")
     print(proc.time()-start)
 
+    ## Retrieve cached attributes for all assets
+    if(cache.attribs){
+      caches <- clusterEvalQ(cl,attrib.cache)
+      ##new.attribs <- setdiff(unique(do.call(c,lapply(caches,names))),names(attrib.cache))
+      for(cc in caches){
+        new.attribs <- setdiff(unique(names(cc)),names(attrib.cache))
+        if(length(new.attribs)>0) attrib.cache <<- modifyList(attrib.cache,cc[new.attribs])
+      }
+    }
+    
     stopCluster(cl)
   }
   all.diffs <- do.call(c,all.diffs2)
