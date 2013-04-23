@@ -30,9 +30,13 @@ function(scenario,assetid,ctf,gap=2,mindur=3,cache.attribs=FALSE){
     if(is.null(assetid)) assetid <- -99
   } else {stop("Object has unexpected class")}
 
-  if(cache.attribs & !exists("attrib.cache")) attrib.cache <<- list()
+  cache.id <- paste(scenario,assetid,ctf,sep=" ")
+  
+  if(cache.attribs && !exists("attrib.cache")) attrib.cache <<- list()
+  if (cache.attribs) cached <- attrib.cache[[cache.id]]
+  
   ## If not using caching or run isn't in cache. is.null is only checked if cache.attribs
-  if(!cache.attribs | (cache.attribs && is.null(attrib.cache[[scenario]]))){
+  if(!cache.attribs | (cache.attribs && is.null(cached))){
   
     ## Flood events
     flowevent <- eventseq(surfaceflow, thresh = ctf, mingap = gap, mindur=mindur)
@@ -54,10 +58,10 @@ function(scenario,assetid,ctf,gap=2,mindur=3,cache.attribs=FALSE){
                 ndays=length(surfaceflow),
                 events=c(flowevent.attrib$ddd,list(gwlevel=gwlevel))
                 )
-    if(cache.attribs)     attrib.cache[[scenario]] <<- res
+    if(cache.attribs)     attrib.cache[[cache.id]] <<- res
     return(res)
-  } else if (cache.attribs && !is.null(attrib.cache[[scenario]])){
-    return(attrib.cache[[scenario]])
+  } else if (cache.attribs && !is.null(cached)){
+    return(cached)
   } else {
     stop("Unexpected cache.attribs state")
   }
