@@ -1,5 +1,5 @@
 eventattrib.scen <-
-function(scenario,assetid,ctf,gap=2,mindur=3){
+function(scenario,assetid,ctf,gap=2,mindur=3,cache.attribs=FALSE){
   ## Obtain required time series
   if(is.character(scenario)){
     ## TODO: currently assuming that all time series are for the same period,
@@ -20,35 +20,44 @@ function(scenario,assetid,ctf,gap=2,mindur=3){
     surfaceflow <- scenario
     baseflow <- NULL
     gwlevel <- NULL
-    scenario <- -99
+    scenario <- digest(scenario)
     if(is.null(assetid)) assetid <- -99
   } else if (is.list(scenario)){
     surfaceflow <- scenario$surfaceflow
     baseflow <- scenario$baseflow
     gwlevel <- scenario$gwlevel
-    scenario <- -99
+    scenario <- digest(scenario)
     if(is.null(assetid)) assetid <- -99
   } else {stop("Object has unexpected class")}
 
-  ## Flood events
-  flowevent <- eventseq(surfaceflow, thresh = ctf, mingap = gap, mindur=mindur)
-  if(!all(is.na(coredata(flowevent))))
-    flowevent.attrib <- eventattrib(surfaceflow,flowevent,FUN=mean)
-  else return(NULL)
+  if(cache.attribs & !exists("attrib.cache")) attrib.cache <<- list()
+  if(!cache.attribs | is.null(attrib.cache[[scenario]])){
+  
+    ## Flood events
+    flowevent <- eventseq(surfaceflow, thresh = ctf, mingap = gap, mindur=mindur)
+    if(!all(is.na(coredata(flowevent))))
+      flowevent.attrib <- eventattrib(surfaceflow,flowevent,FUN=mean)
+    else return(NULL)
 
-  ##gwlevel
-  gwlevel <- coredata(gwlevel)
-  ## TODO: better way of dealing with NAs?
-  gwlevel <- na.omit(gwlevel)
+    ##gwlevel
+    gwlevel <- coredata(gwlevel)
+    ## TODO: better way of dealing with NAs?
+    gwlevel <- na.omit(gwlevel)
 
-  list(
-       ##input
-       assetid=assetid,
-       scenario=scenario,
-       ctf=ctf,
-       ##output
-       ndays=length(surfaceflow),
-       events=c(flowevent.attrib$ddd,list(gwlevel=gwlevel))
-       )
-
+    res <- list(
+                ##input
+                assetid=assetid,
+                scenario=scenario,
+                ctf=ctf,
+                ##output
+                ndays=length(surfaceflow),
+                events=c(flowevent.attrib$ddd,list(gwlevel=gwlevel))
+                )
+    if(cache.attribs)     attrib.cache[[scenario]] <- res
+    return(res)
+  } else if (cache.attribs & !is.null(attrib.cache[[scenario]])){
+    return(attrib.cache[[scenario]])
+  } else {
+    stop("Unexpected cache.attribs state")
+  }
 }
