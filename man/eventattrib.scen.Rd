@@ -7,7 +7,7 @@
   Define events and call \code{\link{eventattrib}} to calculate event attributes
 }
 \usage{
-eventattrib.scen(scenario, assetid, ctf, gap = 2, mindur = 3)
+eventattrib.scen(scenario, assetid, ctf, gap = 2, mindur = 3,cache.attribs=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,6 +26,11 @@ eventattrib.scen(scenario, assetid, ctf, gap = 2, mindur = 3)
 }
 \item{mindur}{
   See \code{\link{eventseq}}
+}
+\item{cache.attribs}{
+  If \code{TRUE} saves and retrieves results from each scenario in
+  global \code{attrib.cache}. Saves computation time when multiple runs with same
+  scenarios are made.
 }
 }
 \details{
