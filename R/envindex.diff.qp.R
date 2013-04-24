@@ -117,7 +117,7 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
 
 
 envindex.diff.getdata <-
-function(...,scen,baseline,ecospecies,use.durs=FALSE,attribs.usesduration){
+function(...,scen,baseline){
   sidx <<- eventattrib.scen(...,scenario=scen)
   bidx <<- eventattrib.scen(...,scenario=baseline)
 }

@@ -82,5 +82,8 @@ what.weights(xx)
 
 ## What weights would make the result certain?
 ## obtain individual
-rr <- run.scen(xx,dir="max",attribs.usesduration)
-plot.weight.classes(sapply(rr$pp.s,sum)-sapply(rr$pp.b,sum))
+envindex.diff.getdata(scen="Pre90",baseline="Post90",
+                      assetid=1,ctf=asset.table[1,7])
+rr <- run.scen(xx[[1]],dir="max",attribs.usesduration)
+plot.weight.classes(sapply(rr$pp.s,sum)-sapply(rr$pp.b,sum),
+                    current.weights=xx[[1]]$pars.max.weights)

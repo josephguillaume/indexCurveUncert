@@ -14,9 +14,9 @@ run.scen <- function(xx,dir="max",attribs.usesduration){
                  )
   names(pp.b) <- attribs
   ## Get day prefs. Days for different attributes must be of same length
-  pd.s <- rep(0,ndays)
+  pd.s <- rep(0,sidx$ndays)
   for(i in 1:length(weights)) pd.s <- pd.s+weights[i]*pp.s[[i]]
-  pd.b <- rep(0,ndays)
+  pd.b <- rep(0,bidx$ndays)
   for(i in 1:length(weights)) pd.b <- pd.b+weights[i]*pp.b[[i]]
   ## Total diff
   total.diff <- sum(pd.s)-sum(pd.b)
