@@ -52,10 +52,7 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
   })
 
   ## Solve LP
-  ##lprec <- make.lp(NROW(constr),length(obj))
-  lprec <- make.lp(0,length(obj))
-  lp.control(lprec,sense=dir)
-  set.objfn(lprec,obj)
+  lprec <- make.lp(NROW(constr),nvar)
   ## Broad bounds
   ## set.bounds(lprec,
   ##            lower=rep(0,length(obj)),
@@ -67,17 +64,20 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
     ##1a-1b<>rhs = a<>b+rhs
     ## If not specified, RHS of constraint is 0 (mainly for backward compatibility)
     if(ncol(constr)==3) constr <- cbind(constr,0)
-    for(i in 1:NROW(constr)){
-      cc <- rep(0,length(obj))
-      cc[constr[i,1]] <- 1
-      cc[constr[i,2]] <- -1
-      ## TODO: avoiding this function could give 50x speedup
-      add.constraint(lprec,cc,as.character(constr[i,3]),constr[i,4])
+    ## nvar x nconstr matrix
+    cc <- t(apply(constr[,1:2],1,
+                  function(i) (1:nvar==i[1])-(1:nvar==i[2])))
+    for(i in 1:ncol(cc)){
+        set.column(lprec,i,cc[,i])
+        set.constr.type(lprec,as.character(constr[ ,3]))
+        set.constr.value(lprec,constr[,4])
     }
   }
   ##Set limits on y values
   ##set.bounds(lprec,upper=0.1,column=1)
   if(!is.null(bounds)) set.bounds(lprec,upper=bounds$upper,lower=bounds$lower)
+  lp.control(lprec,sense=dir)
+  set.objfn(lprec,obj)
   st=solve(lprec)
   if(st!=0) stop(sprintf("lpSolve 'solve' status code was %d",st))
 
