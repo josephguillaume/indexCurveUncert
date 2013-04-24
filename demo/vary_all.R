@@ -44,56 +44,11 @@ for(s in specieslist)
 ################################################################################
 ## Vary all
 
-library(reshape)
-library(ggplot2)
-
-library(snow)
-
-cl <- makeCluster(3, type = "SOCK")
-clusterEvalQ(cl,library(indexCurveUncert))
-clusterExport(cl,"all.hydroinputlist")
-clusterExport(cl,"index.all")
-clusterExport(cl,"approxes.all")
-clusterExport(cl,"asset.table")
-clusterExport(cl,"specieslist")
-clusterExport(cl,"attribs.usesduration")
-
-start <- proc.time()
-all.diffs2 <-
-  clusterApplyLB(cl,
-                 1:nrow(asset.table),
-                 function(assetid){
-                   ctfs <- asset.table[assetid,4:6]
-                   seq.ctfs <- seq(min(ctfs)*0.25,max(ctfs)*1.25,length.out=10)
-                   ##seq.ctfs <- ctfs[2]
-                   seq.ctfs <- sort(unique(c(seq.ctfs,as.numeric(ctfs))))
-                   all.diffs <- NULL
-                   for(ctf in seq.ctfs){ ##9 sec each
-                     #st <- proc.time()
-                     all.diffs <-
-                       c(all.diffs,
-                             envindex.diff.qp(scen="Post90",baseline="Pre90",
-                                              ecospecies=specieslist,
-                                              assetid=assetid,ctf=ctf,
-                                              use.durs=c(T,F),
-                                              attribs.usesduration = attribs.usesduration
-                             ))
-                     #print(proc.time()-st)
-                   }
-                   all.diffs
-                 })
-proc.time()-start
-## laptop 510 sec=8.5min
-## 7 assets * 10 ctfs * 9 sec = 10.5 min
-## 19*7*(1-.39)*n = time for n ctf levels
-## t/(19*7*(1-.39)) num ctf levels in t seconds
-## (7*10*19-510)/(7*10*19) = 39% speedup
-
-stopCluster(cl)
-
-all.diffs <- do.call(c,all.diffs2)
-class(all.diffs) <- c("envindex.bound",class(all.diffs))
-
+all.diffs <- vary_all(scen="Post90",baseline="Pre90",ecospecies=specieslist,
+                      use.durs=c(T,F),
+                      attribs.usesduration=attribs.usesduration,
+                      assets=1:nrow(asset.table),getSeqCtfs=getSeqCtfs10
+                      )
 
 ##save(all.diffs,file="vary_all_qp.Rdata")
 

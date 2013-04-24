@@ -7,6 +7,7 @@ getSeqCtfs10 <- function(assetid) {
 
 vary_all <- function(assets,do.par=T,getSeqCtfs,cache.attribs=T,...){
   seq.ctfs <- lapply(assets,getSeqCtfs)
+  if(cache.attribs && !exists("attrib.cache")) attrib.cache <<- list()
   if (!do.par){
     cat("Starting runs\n")
     start <- proc.time()
