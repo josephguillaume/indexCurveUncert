@@ -201,7 +201,8 @@ plot.unique.prefs(subset(all.diffs,species=="RRGMS"),"duration",ncol=NA)
 ################################################################################
 
 ## Redo without gwlevel for WCRR
-## TODO: caching of attributes to speed up recalc of prefs
+## Removes and reruns just named species. Uses cached results by default.
+## TODO: avoid re-sharing cache by using consistent parallel session
 index.all$WCRR_gwlevel.csv <- NULL
 all.diffs <- redo_diffs(all.diffs,ecospecies="WCRR",
                         scen="Post90",baseline="Pre90",
