@@ -9,7 +9,7 @@ Aggregate discrete results, marginalising over some variables
   uncertainty variables to obtain either the agreed answer or "Uncertain".
 }
 \usage{
-marginalise(tabm, form, verbose = F)
+marginalise(tabm, form, verbose = F,na.rm=F)
 }
 \arguments{
   \item{tabm}{
@@ -20,7 +20,12 @@ marginalise(tabm, form, verbose = F)
 }
   \item{verbose}{
     If \code{TRUE}, prints retained and marginalised variables.
-}
+  }
+  \item{na.rm}{
+    If \code{TRUE}, ignores \code{NA}. By default \code{NA} causes result
+    to be "Uncertain". This allows \code{NA} to be interpreted as an ambiguous
+    value that agrees with all possible discrete values.
+    }
 }
 \value{
   A long format data.frame with the retained variables specified in
