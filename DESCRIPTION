@@ -1,11 +1,11 @@
 Package: indexCurveUncert
 Type: Package
 Title: Model index curves under uncertainty
-Version: 1.0
+Version: 1.1
 Date: 2013-03-12
 Author: Joseph Guillaume
 Maintainer: Joseph Guillaume <joseph.guillaume@anu.edu.au>
-Description: More about what it does (maybe more than one line)
+Description: Given constraints, generate extreme suitability index curve models to investigate uncertainty in their predictions
 Depends: hydromad,lpSolveAPI,reshape
-Suggests: ggplot2
+Suggests: ggplot2,rcdd
 License: What license is it under?

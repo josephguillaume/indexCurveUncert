@@ -87,16 +87,10 @@ go()
 
 
 ### iv. Weight constraints
-
-## getWeightConstraints <- function(attribs){
-##   ## gwlevel less than all others
-##   list(constr=data.frame(a=which(attribs=="gwlevel"),b=which(attribs!="gwlevel"),"<=",0),
-##        bounds=NULL)
-## }
-
-weight.comp <- data.frame(a="gwlevel",
-                          b=setdiff(names(attribs.usesduration),c("gwlevel","duration")),
-                          status="<=",min.gap=0.05)
+weight.comp <- list()
+weight.comp$RRGMS <- data.frame(a="gwlevel",
+                                b=setdiff(names(attribs.usesduration),c("gwlevel","duration")),
+                                status="<=",min.gap=0.05)
 
 go()
 
@@ -108,7 +102,8 @@ pref.smooth$RRGMS_duration.csv <- data.frame(min.x=0,max.x=100,min.step=-0.02,ma
 
 pref.bounds$RRGMS_duration.csv <- data.frame(min.x=100,max.x=100,min.y=1,max.y=1)
 
-weight.bounds <- data.frame(a="duration",min=NA,max=0)
+weight.bounds <- list()
+weight.bounds$RRGMS <- data.frame(a="duration",min=NA,max=0)
 
 ## TODO: could plot what weights would give solution
 
@@ -124,7 +119,7 @@ pref.monoton
 pref.comp
 weight.comp
 
-getWeightConstraints(names(attribs.usesduration))
+getWeightConstraints("RRGMS",names(attribs.usesduration))
 
 ################################################################################
 ## Time effect of caching

@@ -83,7 +83,7 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                 pars.min <- NA
                 pars.max <- NA
             } else {
-                constr <- getWeightConstraints(names(prefs))
+                constr <- getWeightConstraints(species,names(prefs))
                 w.min <- lp.weights(sapply(prefs,function(x) x$min$obj),
                                     "min",
                                     bounds=constr$bounds,
