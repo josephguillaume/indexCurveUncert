@@ -45,11 +45,16 @@ getWeightConstraintsLists <- function(species,attribs){
     constr[,4] <- constr[,4]*ifelse(constr[,3]=="<=",-1,1)
   }
   if(exists("weight.bounds") && !is.null(weight.bounds[[species]])){
-    for(i in 1:nrow(weight.bounds[[species]])){
-      w.a <- which(attribs==weight.bounds[[species]][i,1])
-      ## Keep tighter bounds
-      bounds$lower[w.a] <- max(bounds$lower[w.a],weight.bounds[[species]][i,2],na.rm=T)
-      bounds$upper[w.a] <- min(bounds$upper[w.a],weight.bounds[[species]][i,3],na.rm=T)
+    bbb <- weight.bounds[[species]]
+    ## Remove constraints that refer to attributes not used
+    bbb <- bbb[bbb[,1] %in% attribs,]
+    if(NROW(bbb)>0){
+      for(i in 1:nrow(bbb)){
+        w.a <- which(attribs==as.character(bbb[i,1]))
+        ## Keep tighter bounds
+        bounds$lower[w.a] <- max(bounds$lower[w.a],bbb[i,2],na.rm=T)
+        bounds$upper[w.a] <- min(bounds$upper[w.a],bbb[i,3],na.rm=T)
+      }
     }
   }
   if(NROW(constr)==0) constr <- NULL
