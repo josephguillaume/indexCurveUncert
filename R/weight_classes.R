@@ -26,7 +26,7 @@ weight.classes <- function(x){
         ws.all <- rbind(ws.all,cbind(dir=dir,
                                      v[,-(1:2)]))
     }
-    colnames(ws.all) <- c("dir",sprintf("w%d",1:nattrib))
+    colnames(ws.all) <- c("dir",names(x))
     rownames(ws.all) <- 1:nrow(ws.all)
     ws.all
 }
@@ -45,7 +45,7 @@ plot.weight.classes <- function(x,w.vertices,current.weights=NULL){
         ch.neg <- c(ch.neg,ch.neg[1])
         if(cc[i,1]==cc[i,2]) {
             plot(NULL,xlim=c(0,1),ylim=c(-1,1),
-                 xlab=sprintf("w%d",cc[i,1]),ylab=NA
+                 xlab=names(x)[cc[i,1]],ylab=NA
                  )
             segments(x0=min(ws.pos[,cc[i,1]]),x1=max(ws.pos[,cc[i,1]]),y0=1,y1=1,col="green",lwd=2)
             segments(x0=min(ws.neg[,cc[i,1]]),x1=max(ws.neg[,cc[i,1]]),y0=-1,y1=-1,col="red",lwd=2)
@@ -53,7 +53,7 @@ plot.weight.classes <- function(x,w.vertices,current.weights=NULL){
         } else {
             ##plot(w.vertices[ch,cc[i,1]],w.vertices[ch,cc[i,2]],type="l",xlim=c(0,1),ylim=c(0,1))
             plot(NULL,xlim=c(0,1),ylim=c(0,1),
-                 xlab=sprintf("w%d",cc[i,1]),ylab=sprintf("w%d",cc[i,2])
+                 xlab=names(x)[cc[i,1]],ylab=names(x)[cc[i,2]]
                  )
             polygon(ws.neg[ch.neg,as.numeric(cc[i,])],col="red")
             polygon(ws.pos[ch.pos,as.numeric(cc[i,])],col="green")
