@@ -29,3 +29,15 @@ c.envindex.bound <- function(...,recursive=FALSE) {
     class(y) <- c("envindex.bound",class(y))
     y
 }
+
+"*.envindex.bound" <- function(e1,e2){
+  if(inherits(e1,"envindex.bound")) {obj=e1;val=e2}
+  else { obj=e2;val=e1}
+  out<-lapply(obj,function(x){
+    x$diff.min<-val*x$diff.min
+    x$diff.max<-val*x$diff.max
+    x
+  })
+  class(out) <- class(obj)
+  out
+}
