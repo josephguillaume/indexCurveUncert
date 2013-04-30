@@ -11,7 +11,7 @@ what.weights(x)
 }
 \arguments{
   \item{x}{
-    \code{envindex.bound} object, as produced by \link{\code{envindex.diff.qp}}
+    \code{envindex.bound} object, as produced by \code{\link{envindex.diff.qp}}
 }
 }
 \details{
@@ -24,7 +24,7 @@ data.frame with columns assetid,ctf,species,use.dur,diff and attribute values
 Joseph Guillaume
 }
 \seealso{
-  \link{\code{envindex.diff.qp}}
+  \code{\link{envindex.diff.qp}}
 }
 \examples{
 }

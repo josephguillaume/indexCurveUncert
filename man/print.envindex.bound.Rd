@@ -20,6 +20,10 @@ and can be printed, subsetted, plotted.
     logical expression indicating elements keep. Defaults to keeping everything
   }
   \item{attribs}{Attributes for which to plot preference curves}
+  \item{main}{Optional title to use for plot}
+  \item{y}{
+    Ignored
+  }
   \item{\dots}{
 Ignored}
 }

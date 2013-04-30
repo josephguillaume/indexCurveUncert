@@ -7,7 +7,7 @@ Max/min differences by Quadratic Programming
 Calculate the maximum and minimum difference between indices 
 }
 \usage{
-envindex.diff.qp(..., scen, baseline, ecospecies, use.durs = FALSE,attribs.usesduration=c("timing"="duration","duration"="duration","dry"="duration"))
+envindex.diff.qp(..., scen, baseline, ecospecies, use.durs = FALSE,attribs.usesduration=c("timing"="duration","duration"="duration","dry"="duration"),calc.mean=TRUE)
 }
 \arguments{
   \item{\dots}{
@@ -35,11 +35,16 @@ envindex.diff.qp(..., scen, baseline, ecospecies, use.durs = FALSE,attribs.usesd
     specify a column to use for duration when \code{use.durs} is
     \code{TRUE}.
     The named attribute will be looked up in the results from
-    \link{\code{eventattrib.scen}} and to look up CPTs from
+    \code{\link{eventattrib.scen}} and to look up CPTs from
     \code{index.all} and \code{approxes.all}.
     To not use an attribute for a particular species, either do not
     provide a CPT such that \code{index.all$species_attrib.csv=NULL}, or
-    constrain the weight of the attribute to zero using \link{\code{getWeightConstraints}}.
+    constrain the weight of the attribute to zero using \code{\link{getWeightConstraints}}.
+  }
+  \item{calc.mean}{
+    If \code{TRUE}, i.e. by default, compares mean suitability values
+  between the \code{scen} and \code{baseline} scenarios. Otherwise,
+  compares total suitability values
   }
 }
 \details{

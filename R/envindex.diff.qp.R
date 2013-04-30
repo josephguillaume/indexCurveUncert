@@ -1,7 +1,7 @@
 envindex.diff.qp <-
 function(...,scen,baseline,ecospecies,use.durs=FALSE,
          attribs.usesduration=c("timing"="duration","duration"="duration","dry"="duration"),
-         calc.mean=FALSE
+         calc.mean=TRUE
          ){
     sidx <- eventattrib.scen(...,scenario=scen)
     bidx <- eventattrib.scen(...,scenario=baseline)

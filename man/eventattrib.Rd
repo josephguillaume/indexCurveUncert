@@ -1,28 +1,28 @@
 \name{eventattrib}
 \alias{eventattrib}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Calculate attributes of given events
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Calculate attributes for events, including date of start, end and
+  middle, month of start, length/duration,length of dry period.
 }
 \usage{
 eventattrib(X, events, FUN = mean, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{X}{
-%%     ~~Describe \code{X} here~~
+    \code{\link[zoo]{zoo}} object of streamflow
 }
   \item{events}{
-%%     ~~Describe \code{events} here~~
+    \code{\link[zoo]{zoo}} object defining events, as produced by \code{\link{eventseq}}
 }
   \item{FUN}{
-%%     ~~Describe \code{FUN} here~~
+    function applied to streamflow values of each event, and returned as
+    variable  \code{xValues}
 }
   \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+    Ignored.
 }
 }
 \details{
@@ -48,36 +48,9 @@ eventattrib(X, events, FUN = mean, ...)
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+Usually called by \code{\link{eventattrib.scen}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (X, events, FUN = mean, ...) 
-{
-    stopifnot(inherits(X, "zoo"))
-    xValues <- eventapply(X, events = events, FUN = FUN, ...)
-    xValuesend <- eventapply(X, events = events, FUN = FUN, TIMING = "end")
-    xLengths <- eventapply(X, events = events, FUN = NROW, TIMING = "middle", 
-        by.column = FALSE)
-    midTimeComponents <- as.POSIXlt(time(xLengths))
-    startTimeComponents <- as.POSIXlt(time(xValues))
-    Monthstart = startTimeComponents$mon + 1
-    Duration = coredata(xLengths)
-    DryPeriod = preInterEventDuration(events)
-    return(list(events = events, xValues = xValues, xValuesend = xValuesend, 
-        xLengths = xLengths, midTimeComponents = midTimeComponents, 
-        startTimeComponents = startTimeComponents, Monthstart = Monthstart, 
-        Duration = Duration, DryPeriod = DryPeriod, ddd = data.frame(StartTime = time(xValues), 
-            EndTime = time(xValuesend), Value = coredata(xValues), 
-            Yearmid = midTimeComponents$year + 1900, Monthstart = Monthstart, 
-            Duration = Duration, DryPeriod = DryPeriod)))
-  }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ ~kwd1 }
 \keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

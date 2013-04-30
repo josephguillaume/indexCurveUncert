@@ -41,8 +41,8 @@ Joseph Guillaume
 \examples{
 long.df=data.frame(expand.grid(uncert1=1:2,control1=1:3),value=c("a","b","a","a","b","b"))
 ## Do all rows with a given control1 agree on value, marginalising over uncert1?
-marginalise(long.df,control1~.,T)
+marginalise(long.df,control1~.,verbose=TRUE)
 ## Do all rows agree on value?
-marginalise(long.df,~.,T)
+marginalise(long.df,~.,verbose=TRUE)
 }
 \keyword{ ~kwd1 }

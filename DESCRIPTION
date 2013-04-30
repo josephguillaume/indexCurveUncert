@@ -6,6 +6,6 @@ Date: 2013-03-12
 Author: Joseph Guillaume
 Maintainer: Joseph Guillaume <joseph.guillaume@anu.edu.au>
 Description: Given constraints, generate extreme suitability index curve models to investigate uncertainty in their predictions
-Depends: hydromad,lpSolveAPI,reshape
-Suggests: ggplot2,rcdd
+Depends: hydromad,lpSolveAPI,reshape,zoo
+Suggests: ggplot2,rcdd,snow
 License: What license is it under?
