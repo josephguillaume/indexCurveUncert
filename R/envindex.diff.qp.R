@@ -55,7 +55,8 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
 
                 ## Divide total by number of days
                 if(calc.mean){
-                    if(is.null(dur)) dur <- list(rep(1/bidx$ndays,length(bidx$events)),rep(1/sidx$ndays,length(sidx$events)))
+                    if(is.null(dur)) dur <- list(rep(1/bidx$ndays,length(ev[[1]])),
+                                                 rep(1/sidx$ndays,length(ev[[2]])))
                     else dur <- list(dur[[1]]/bidx$ndays,dur[[2]]/sidx$ndays)
                 }
 
