@@ -36,21 +36,20 @@ run.pref <- function(xx,attrib,dir="max"){
 dayPrefsDur <- function(xx,dir,idx,attrib,attribs.usesduration){
   which.dur <- attribs.usesduration[attrib]
   ## TODO: better id number of days
-  ndays   <- length(idx$events$gwlevel)
   if(is.na(which.dur)){ ##Already daily
     pp <- run.pref(xx,attrib,dir=dir)(idx$events[[attrib]])
-    stopifnot(length(pp)==ndays)
+    stopifnot(length(pp)==idx$ndays)
   } else if (xx$use.dur){ ##Treat value as average across days -> repeat
     pp <- unlist(lapply(1:length(idx$events[[attrib]]),
                         function(i) rep(idx$events[[attrib]][i],idx$events[[which.dur]][i])))
     pp <- run.pref(xx,attrib,dir=dir)(pp)
-    pp <- c(rep(0,ndays-length(pp)),pp)
+    pp <- c(rep(0,idx$ndays-length(pp)),pp)
   }  else{ ## Treat values as total across days -> split
     ff <- run.pref(xx,attrib,dir=dir)
     pp <- unlist(lapply(1:length(idx$events[[attrib]]),
                         function(i) rep(ff(idx$events[[attrib]][i])/idx$events[[which.dur]][i],
                                         idx$events[[which.dur]][i])))
-    pp <- c(rep(0,ndays-length(pp)),pp)    
+    pp <- c(rep(0,idx$ndays-length(pp)),pp)    
   }
   pp
 }
