@@ -1,10 +1,12 @@
+## ev and dur may both have list elements of length zero which may or may not be NULL.
 lp.perf <-
 function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
   library(lpSolveAPI)
-  stopifnot(is.null(dur) | identical(sapply(ev,length),sapply(dur,length)))
-  if(!all(ev[[1]]<=max(xs))|!all(ev[[2]]<=max(xs)))
-      stop(sprintf("Maximum attribute value of events (%.2f) is not less than or equal to maximum x value of index curve (%.2f)",
-                   max(c(ev[[1]],ev[[2]])),max(xs)))
+  if(!(length(dur)==0 | identical(sapply(ev,length),sapply(dur,length))))
+     stop("Lengths of ev and dur do not match for some scenario")
+  if((length(ev[[1]])>0 && !all(ev[[1]]<=max(xs)))|(length(ev[[2]])>0 && !all(ev[[2]]<=max(xs))))
+    stop(sprintf("Maximum attribute value of events (%.2f) is not less than or equal to maximum x value of index curve (%.2f)",
+                 max(c(ev[[1]],ev[[2]])),max(xs)))
 
   nvar <- length(xs)
   ## Add x indices of breakpoints to vals
@@ -16,11 +18,17 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
     ##  each scenario in a column in order
       x <- sapply(1:length(ev),function(aidx) { ##For each scenario
           a <- ev[[aidx]] ##Attributes of each event
+          ## If no events, return 0
+          if(length(a)==0){
+            o <- c(0,0)
+            names(o) <- c(sprintf("A%d",i),sprintf("n%d",i))
+            o
+          }
           ## Indicate whether attributes are in this linear
           if(i==nvar-1) { in.ev <- a>=xs[i] & a<=xs[i+1]
                       } else { in.ev <- a>=xs[i] & a<xs[i+1] }
-          ## Calculate A and n for this scenarios for this linear
-          if(!is.null(dur)){ ##Multiply by duration if required
+          ## Calculate A and n for this scenario for this linear
+          if(length(dur)>0){ ##Multiply by duration if required
               o <- c(A=sum(a[in.ev]*dur[[aidx]][in.ev]),
                      n=sum(dur[[aidx]][in.ev]))
           } else { o <- c(sum(a[in.ev]),n=length(which(in.ev))) }

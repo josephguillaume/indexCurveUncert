@@ -38,11 +38,9 @@ function(scenario,assetid,ctf,gap=2,mindur=3,cache.attribs=FALSE){
   ## If not using caching or run isn't in cache. is.null is only checked if cache.attribs
   if(!cache.attribs | (cache.attribs && is.null(cached))){
   
-    ## Flood events
+    ## Flood events. If no events, flowevent.attrib may have NULLs in list
     flowevent <- eventseq(surfaceflow, thresh = ctf, mingap = gap, mindur=mindur)
-    if(!all(is.na(coredata(flowevent))))
-      flowevent.attrib <- eventattrib(surfaceflow,flowevent,FUN=mean)
-    else return(NULL)
+    flowevent.attrib <- eventattrib(surfaceflow,flowevent,FUN=mean)
 
     ##gwlevel
     gwlevel <- coredata(gwlevel)

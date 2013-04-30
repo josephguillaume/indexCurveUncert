@@ -27,20 +27,20 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
     ##TODO: some requested ctf values/scenarios will have no results transparently
     if(is.null(sidx) |is.null(bidx)) return(NULL)
     stopifnot(!is.null(sidx$events)) ## should only be a single result
+    stopifnot(identical(bidx[c("assetid","ctf")],
+                        sidx[c("assetid","ctf")]
+                        ))
     all.prefs <- NULL
     ## Run for each dur
     for(use.dur in use.durs){
         ## Run for each species
         for(species in ecospecies){
-            stopifnot(identical(bidx[c("assetid","ctf")],
-                                sidx[c("assetid","ctf")]
-                                ))
             ## For each attribute, get min and max preference curve results
             prefs <- lapply(names(attribs.usesduration),function(attrib){
                 ## For this attribute, extract events and current cpt (index curve abcissa)
                 ev <- list(bidx$events[[attrib]],
                            sidx$events[[attrib]])
-                lapply(ev,na.fail)
+                lapply(ev[!sapply(ev,is.null)],na.fail)
                 cpt <- index.all[[sprintf("%s_%s.csv", species,attrib)]]
                 ##Attributes will not be considered if cpt is NULL
                 if(is.null(cpt)) return(NULL)
@@ -54,10 +54,11 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                 else dur <- NULL
 
                 ## Divide total by number of days
+                ## *100 to minimise precision issues TODO: is this enogh
                 if(calc.mean){
-                    if(is.null(dur)) dur <- list(rep(1/bidx$ndays,length(ev[[1]])),
-                                                 rep(1/sidx$ndays,length(ev[[2]])))
-                    else dur <- list(dur[[1]]/bidx$ndays,dur[[2]]/sidx$ndays)
+                    if(is.null(dur)) dur <- list(rep(1/bidx$ndays*100,length(ev[[1]])),
+                                                 rep(1/sidx$ndays*100,length(ev[[2]])))
+                    else dur <- list(dur[[1]]/bidx$ndays*100,dur[[2]]/sidx$ndays*100)
                 }
 
                 ## Calculate results for min-diff and max-diff preference curves
