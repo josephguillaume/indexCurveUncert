@@ -3,10 +3,9 @@ function(scenario,assetid,ctf,gap=2,mindur=3,cache.attribs=FALSE){
   ## Obtain required time series
   if (is.character(scenario)) {
     gauge <- asset.table[assetid, 2] #first row is associated with the first asset and so on.
+    bore <- asset.table$Bore[assetid]
     ## Groundwater level. Might be NULL
-    gwlevel <- all.hydroinputlist[[scenario]]$gwlevel.csv
-    if (!is.null(gwlevel)) 
-      gwlevel <- gwlevel[, assetid]
+    gwlevel <- all.hydroinputlist[[scenario]]$gwlevel.csv[,as.character(bore)]
     ## Surface flow. hardcoded first column
     surfaceflow <- all.hydroinputlist[[scenario]][[paste(gauge, 
                                                          ".csv", sep = "")]][, 1]
