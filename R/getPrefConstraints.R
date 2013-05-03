@@ -62,6 +62,100 @@ getWeightConstraintsLists <- function(species,attribs){
        bounds=bounds)
 }
 
+showPrefConstraintsLists <- function(species,attrib){
+  cat(sprintf("Constraints on preference curve obtained from lists
+for species %s, attrib %s\n",species,attrib))
+
+  cat("pref.bounds\n")
+  if(!exists("pref.bounds")){
+    cat("No bounds\n")
+    pref.bounds <<- NULL
+  } else {
+    this.bounds <- pref.bounds[[sprintf("%s_%s.csv", species,attrib)]]
+    if(is.null(this.bounds)){
+      cat("No bounds\n")
+    } else {
+      print(this.bounds)
+      for(i in 1:nrow(this.bounds)){
+        cat(sprintf("Suitability must be between %f and %f for attribute values between %f and %f\n",
+                    this.bounds$min.y[i],this.bounds$max.y[i],
+                    this.bounds$min.x[i],this.bounds$max.x[i]
+                    ))
+      }
+    }
+  } ## pref.bounds
+
+  cat("pref.monoton\n")
+  if(!exists("pref.monoton")){
+    cat("No constraints on monotonicity - suitability can go up or down unrestricted\n")
+    pref.monoton <<- NULL
+  } else {
+    this.monoton <- pref.monoton[[sprintf("%s_%s.csv", species,attrib)]]
+    if(is.null(this.monoton)){
+      cat("No constraints on monotonicity - suitability can go up or down unrestricted\n")
+    } else {
+      ## Default to non-strict monotonicity
+      if(is.null(this.monoton$min.step)) this.monoton$min.step <- 0
+      print(this.monoton)
+      for(i in 1:nrow(this.monoton)){
+        cat(sprintf("Suitability must go %s by at least %f for attribute values between %f and %f\n",
+                    ifelse(this.monoton$dir[i]==1,"up","down"),this.monoton$min.step[i],
+                    this.monoton$min.x[i],this.monoton$max.x[i]
+                    ))
+      }
+    }
+  } ##pref.monoton
+
+  cat("pref.comp\n")
+  if(!exists("pref.comp")){
+    cat("No comparison constraints - suitability of different attribute values are not directly compared\n")
+    pref.comp <<- NULL
+  } else {
+    this.comp <- pref.comp[[sprintf("%s_%s.csv", species,attrib)]]
+    if(is.null(this.comp)){
+      cat("No comparison constraints - suitability of different attribute values are not directly compared\n")
+    } else {
+      ## Default to weak comparison
+      if(is.null(this.comp$min.gap)) this.comp$min.gap <- 0
+      print(this.comp)
+      for(i in 1:nrow(this.comp)){
+        cat(sprintf("Suitability of attribute values between %f and %f must be %s than suitability of attribute values between %f and %f, by at least %f\n",
+                    this.comp$min.x1[i],this.comp$max.x1[i],
+                    ifelse(this.comp$dir[i]=="<","less","greater"),
+                    this.comp$min.x2[i],this.comp$max.x2[i],
+                    this.comp$min.gap[i]
+                    ))
+      }
+    }
+  } ## pref.comp
+
+  cat("pref.smooth\n")
+  if(!exists("pref.smooth")){
+    cat("No smoothness constraints - suitability can vary abruptly\n")
+    pref.smooth <<- NULL
+  } else {
+    this.smooth <- pref.smooth[[sprintf("%s_%s.csv", species,attrib)]]
+    if(is.null(this.smooth)){
+      cat("No smoothness constraints - suitability can vary abruptly\n")
+    } else {
+      print(this.smooth)
+      for(i in 1:nrow(this.smooth)){
+        cat(sprintf("Suitability can only vary by between %f and %f per unit change in attribute value, for attribute values between %f and %f\n",
+                    this.smooth$min.step[i],this.smooth$max.step[i],
+                    this.smooth$min.x[i],this.smooth$max.x[i]
+                    ))
+      }
+    }
+  } ##pref.smooth
+
+  cat("\n")
+  ## if(!exists("pref.single.extreme.notp")){
+  ##   warning("pref.single.extreme.notp not found, setting to NULL")
+  ##   pref.single.extreme.notp <<- NULL
+  ## }
+  invisible("See output")
+
+}
 
 getPrefConstraintsLists <- function(species,attrib){
   cpt.x <- index.all[[sprintf("%s_%s.csv", species,attrib)]][,1]
@@ -83,6 +177,10 @@ getPrefConstraintsLists <- function(species,attrib){
     warning("pref.smooth not found, no smoothness constraints set")
     pref.smooth <<- NULL
   }
+  ## if(!exists("pref.single.extreme.notp")){
+  ##   warning("pref.single.extreme.notp not found, setting to NULL")
+  ##   pref.single.extreme.notp <<- NULL
+  ## }
   
   ## Convert real-valued bounds
   bounds <- list(lower=rep(0,nx),upper=rep(1,nx))
@@ -122,11 +220,11 @@ getPrefConstraintsLists <- function(species,attrib){
       w.x <- which(cpt.x>=this.smooth$min.x[i] & cpt.x<=this.smooth$max.x[i])
       ## Max slope ya-yb<=min.step, xa>xb
       cc1 <- cbind(expand.grid(a=w.x,b=w.x),status="<=")
-      cc1$min.gap=this.smooth$max.step*(cpt.x[cc1$a]-cpt.x[cc1$b])
+      cc1$min.gap=this.smooth$max.step[i]*(cpt.x[cc1$a]-cpt.x[cc1$b])
       cc1 <- cc1[cc1[,1]>cc1[,2],]
       ## Min slope ya-yb>=min.step, xa>xb
       cc2 <- cbind(expand.grid(a=w.x,b=w.x),status=">=")
-      cc2$min.gap=this.smooth$min.step*(cpt.x[cc2$a]-cpt.x[cc2$b])
+      cc2$min.gap=this.smooth$min.step[i]*(cpt.x[cc2$a]-cpt.x[cc2$b])
       cc2 <- cc2[cc2[,1]>cc2[,2],]
       constr <- rbind(constr,cc1,cc2)
     }
@@ -149,6 +247,8 @@ getPrefConstraintsLists <- function(species,attrib){
     }
   }
   ##
+  ## Add single extreme constraint
+  
   return(list(constr=constr,
               bounds=bounds))
 }

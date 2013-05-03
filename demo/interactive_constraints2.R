@@ -75,6 +75,7 @@ pref.bounds$RRGMS_gwlevel.csv <- data.frame(min.x=12,max.x=Inf,min.y=NA,max.y=0)
 ## GW access good between 2 and 5 m
 pref.bounds$RRGMS_gwlevel.csv <- rbind(pref.bounds$RRGMS_gwlevel.csv,
                                       data.frame(min.x=2,max.x=5,min.y=1,max.y=1))
+showPrefConstraintsLists("RRGMS","gwlevel")
 go()
 
 ## iii.
@@ -82,7 +83,7 @@ go()
 ##min.x,max.x,dir -> f(min.x)<=f(max.x)
 pref.monoton <- list()
 pref.monoton$RRGMS_gwlevel.csv <- data.frame(min.x=5,max.x=12,dir=-1,min.step=0)
-
+showPrefConstraintsLists("RRGMS","gwlevel")
 go()
 
 
@@ -101,6 +102,7 @@ pref.smooth <- list()
 pref.smooth$RRGMS_duration.csv <- data.frame(min.x=0,max.x=100,min.step=-0.02,max.step=0.02)
 
 pref.bounds$RRGMS_duration.csv <- data.frame(min.x=100,max.x=100,min.y=1,max.y=1)
+showPrefConstraintsLists("RRGMS","duration")
 
 weight.bounds <- list()
 weight.bounds$RRGMS <- data.frame(a="duration",min=NA,max=0)
@@ -120,6 +122,9 @@ pref.comp
 weight.comp
 
 getWeightConstraints("RRGMS",names(attribs.usesduration))
+
+specieslist <- c("RRGMS")
+mapply(showPrefConstraintsLists,species=specieslist,attrib=names(attribs.usesduration))
 
 ################################################################################
 ## Time effect of caching
