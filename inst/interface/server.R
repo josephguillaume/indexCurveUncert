@@ -2,42 +2,6 @@ library(shiny)
 library(indexCurveUncert)
 library(ggplot2)
 
-## plot.envindex.bound <- function (x, y, ..., attribs = NA, subset = T, main = NULL)
-## {
-##     e <- substitute(subset)
-##     x <- x[sapply(x, function(o) {
-##         r <- eval(e, o, parent.frame())
-##         r <- r & !is.na(r)
-##     })]
-##     wanted.attribs <- attribs
-##     wanted.main <- main
-##     for (o in x) {
-##         if (is.na(wanted.attribs))
-##             attribs <- names(o$pars.min.weights)
-##         for (attrib in attribs) {
-##             cpt <- index.all[[sprintf("%s_%s.csv", o$species,attrib)]]
-##             if (is.null(cpt))
-##                 next
-##             constr <- getPrefConstraints(o$species, attrib)
-##             plot(cpt[, 1], o[[sprintf("pars.min.%s", attrib)]],
-##                  type = "l", col = red(), ylab = "Preference",
-##                  ylim = c(0, 1), xlab = capwords(attrib), lty = "dashed",
-##                  lwd = 3,...)
-##             polygon(x = c(cpt[, 1], rev(cpt[, 1])), y = c(constr$bounds$upper,
-##                                                     rev(constr$bounds$lower)), col = grey(0.9), border = NA)
-##             lines(cpt[, 1], o[[sprintf("pars.min.%s", attrib)]],
-##                   type = "l", col = red(), lty = "dashed", lwd = 3)
-##             lines(cpt[, 1], o[[sprintf("pars.max.%s", attrib)]],
-##                   type = "l", col = green(), lty = "dotted", lwd = 3)
-##             abline(v = cpt[, 1], lty = "dashed", col = "grey")
-##             if (is.null(wanted.main))
-##                 main <- sprintf("%s %s\n%s", o$species, attrib,
-##                                 ifelse(o$use.dur, "As average of event", "As total for event"))
-##             title(main = main)
-##         }
-##     }
-## }
-
 shinyServer(function(input, output, session) {
 
     getPrefConstraints <- getPrefConstraintsLists
@@ -50,13 +14,12 @@ shinyServer(function(input, output, session) {
     if(exists("pref.monoton.default")) pref.monoton <- pref.monoton.default
     else pref.monoton <- list()
     ## TODO: should generate automatically?
-    if(exists("attribs.usesduration")) attribs.usesduration <- attribs.usesduration.default
+    if(exists("attribs.usesduration.default")) attribs.usesduration <- attribs.usesduration.default
     else attribs.usesduration <- NULL
 
     ## TODO: use existing
     weight.bounds <- list()
     weight.comp <- list()
-    specieslist <- c() ##dummy. gets replaced
 
     environment(getPrefConstraints) <- environment()
     environment(getWeightConstraints) <- environment()
@@ -322,8 +285,8 @@ shinyServer(function(input, output, session) {
             ##http://monkeysuncle.stanford.edu/?p=485
             plot(NA,xlim=c(0,nrow(uu)+1),ylim=range(c(uu$diff.min,uu$diff.max)),xlab="",
                  ylab=sprintf("%s better -- %s better",input$baseline,input$scenario))
-            rect(xleft=-100, ybottom=0, xright=100, ytop=100,col=green())
-            rect(xleft=-100, ybottom=-100, xright=100, ytop=0,col=red())
+            rect(xleft=-100, ybottom=0, xright=100, ytop=100,col=green(),border=NA)
+            rect(xleft=-100, ybottom=-100, xright=100, ytop=0,col=red(),border=NA)
             for(i in 1:nrow(uu)) arrows(uu$id[i],uu$diff.min[i], uu$id[i], uu$diff.max[i], angle=90, code=3, length=0.1)
             ##abline(h=0,lty=2)
             ##ggplot(data=uu)+geom_errorbar(aes(x=id,ymin=diff.min,ymax=diff.max))+xlab("")+scale_x_discrete(labels="")
