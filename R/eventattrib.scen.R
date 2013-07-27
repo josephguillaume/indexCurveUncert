@@ -67,7 +67,7 @@ function (scenario, assetid, ctf, gap = 2, mindur = 3, cache.attribs = FALSE)
         gwlevel <- coredata(gwlevel)
         gwlevel <- na.omit(gwlevel)
         res <- list(assetid = assetid, scenario = scenario, ctf = ctf,
-                    ndays = length(gwlevel), ##length(na.omit(coredata(surfaceflow))),
+                    ndays = NROW(combined), ##length(na.omit(coredata(surfaceflow))),
                     events = c(flowevent.attrib$ddd,list(gwlevel = gwlevel)))
         if (cache.attribs)
             attrib.cache[[cache.id]] <<- res
