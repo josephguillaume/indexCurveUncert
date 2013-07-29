@@ -14,7 +14,7 @@ vary_all <- function(assets,do.par=T,getSeqCtfs,cache.attribs=T,...){
     all.diffs2 <-
       lapply(assets,
              function(assetid,seq.ctfs,...){
-               seq.ctfs <- seq.ctfs[[assetid]]
+               seq.ctfs <- seq.ctfs[[which(assets==assetid)]]
                all.diffs <- NULL
                for(ctf in seq.ctfs){ ##9 sec each
                                         #st <- proc.time()
@@ -40,7 +40,8 @@ vary_all <- function(assets,do.par=T,getSeqCtfs,cache.attribs=T,...){
                   "getWeightConstraints","getPrefConstraints", ## User overrides of default
                   "cached.pref", #getPrefConstraintsCached,getPrefConstraintsMergeWithCache
                   "approxes.all", #getPrefConstraintsMultIndex
-                  "attrib.cache" # eventattrib.scen
+                  "attrib.cache", # eventattrib.scen
+                  "assets" ## seq.ctfs ordering
                   )
     ##setdiff(ls(),toexport) ##what won't be exported
     toexport <- intersect(toexport,ls(envir=.GlobalEnv))
@@ -53,7 +54,7 @@ vary_all <- function(assets,do.par=T,getSeqCtfs,cache.attribs=T,...){
       clusterApplyLB(cl,
                      assets,
                      function(assetid,seq.ctfs,...){
-                       seq.ctfs <- seq.ctfs[[assetid]]
+                       seq.ctfs <- seq.ctfs[[which(assets==assetid)]]
                        all.diffs <- NULL
                        for(ctf in seq.ctfs){ ##9 sec each
                          ##st <- proc.time()
@@ -77,7 +78,7 @@ vary_all <- function(assets,do.par=T,getSeqCtfs,cache.attribs=T,...){
         if(length(new.attribs)>0) attrib.cache <<- modifyList(attrib.cache,cc[new.attribs])
       }
     }
-    
+
     stopCluster(cl)
   }
   all.diffs <- do.call(c,all.diffs2)
