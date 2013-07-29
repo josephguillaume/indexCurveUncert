@@ -67,7 +67,7 @@ $(\".control-label[for='attribs']\").html($(\".control-label[for='attribs']\").h
 
 $('#toggle_all_attribs').on('click',function(evt){
  $('#attribs input:checkbox').attr('checked', ! $('#attribs input:checkbox').attr('checked'));
- $('#ctf_attribs input:checkbox').trigger('change');
+ $('#attribs input:checkbox').trigger('change');
 });
 
 $('#toggle_all_ctf_assets').on('click',function(evt){
@@ -303,6 +303,8 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                               )           #singleton
                                     ),                    #headerPanel
                         sidebarPanel(
+                                     ## TODO: modal dialog to select which side panels are shown?
+                                     ## Editing of constraints always at top of sidebar
                                      conditionalPanel("input.tabs=='pref'",id="pref_edit",
                                                       strong(textOutput("pref_title")),
                                                       matrixInput("pref_bounds",
@@ -331,20 +333,9 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                                         actionButton("btn_discard_weights","Discard changes")
                                                         )
                                                       ),
-                                     div(
-                                         strong(HTML("<b>-</b> Inputs"),id="label_inputs"),
-                                         selectInput("baseline","Baseline",choices="",selected=NULL),
-                                         selectInput("scenario","Scenario",choices="",selected=NULL)
-                                         ),
+                                     ## Species and attributes most important (except in ctf, where assets more important)
                                      conditionalPanel("input.tabs=='pref' || input.tabs=='weights' || input.tabs=='bkpts' || input.tabs=='single_asset'",
                                                       strong("Model properties"),
-                                                      radioButtons("assets_shown",
-                                                                   HTML("<b>-</b> Assets"),
-                                                                   c(1)
-                                                                   ),
-                                                      numericInput("ctf_shown",
-                                                                   HTML("<b>-</b> CTF"),
-                                                                   0,100e3,value=1000),
                                                       radioButtons("species_shown",
                                                                    HTML("<b>-</b> Species for which to show preference curve/weights/breakpoints"),
                                                                    c("placeholder_species"),
@@ -379,12 +370,30 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                                                          selected=NULL),
                                                       HTML("<a id='toggle_all_attribs'>Toggle all</a>")
                                                       ),
+                                     ## Assets and ctf less important than species and attribs
+                                     conditionalPanel("input.tabs=='pref' || input.tabs=='weights' || input.tabs=='bkpts' || input.tabs=='single_asset'",
+                                                      radioButtons("assets_shown",
+                                                                   HTML("<b>-</b> Assets"),
+                                                                   c(1)
+                                                                   ),
+                                                      numericInput("ctf_shown",
+                                                                   HTML("<b>-</b> CTF"),
+                                                                   0,100e3,value=1000)
+                                                      ),
+                                     ## Use duration 2nd least important
                                      conditionalPanel("input.tabs=='ctf' || input.tabs=='pref' || input.tabs=='weights'",
                                                       checkboxGroupInput("use_duration",
                                                                          HTML("<b>-</b> Use duration?"),
                                                                          c(T,F),
                                                                          selected=c(T,F)
-                                                                         ))
+                                                                         )),
+                                     ## Input at bottom - less important for time being,
+                                     ##  and everything else can be collapsed as needed
+                                     div(
+                                         strong(HTML("<b>-</b> Inputs"),id="label_inputs"),
+                                         selectInput("baseline","Baseline",choices="",selected=NULL),
+                                         selectInput("scenario","Scenario",choices="",selected=NULL)
+                                         )
                                      ),
                         mainPanel(
                                   tabsetPanel(id="tabs",
