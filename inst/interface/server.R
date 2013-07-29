@@ -512,8 +512,23 @@ shinyServer(function(input, output, session) {
         } else{return(NULL)}
     })
 
+    ##TODO: shouldn't allow attrib that isn't in xx.all()
+    ##TODO: better error message if attrib is of length zero
+    unique.diffs.all <- reactive({
+        diffs <- xx.all()
+        ## TODO: better mechanism for specifying single attribute
+        attrib <- input$attribs[1]
+        del <- duplicated(lapply(diffs, function(x) do.call(c, x[sprintf("pars.%s.%s", c("max", "min"), attrib)])))
+        diffs <- diffs[!del]
+        list(diffs=diffs,attrib=attrib)
+    })
+
+    ## TODO: actually in CTF results tab at the moment.
     ## depends on xx,attrib_shown or range
     output$pref_asset <- renderPlot({
+        cat("Preference plot\n")
+        diffs <- unique.diffs.all()$diffs
+        attrib <- unique.diffs.all()$attrib
         ## par(mfrow=c(length(input$attribs),length(input$species)))
         ## plot(xx())
         ##cat(input$attrib_shown,"\n")
@@ -521,29 +536,24 @@ shinyServer(function(input, output, session) {
 ##############
         ## TODO: adjust ncol
         ##diffs <- xx.asset()
-        diffs <- xx.noctf()
-        cat("Preference plot\n")
-        attrib <- isolate(input$attribs)
-        del <- duplicated(lapply(diffs, function(x) do.call(c, x[sprintf("pars.%s.%s", c("max", "min"), attrib)])))
-        diffs <- diffs[!del]
         ##par(mfrow = c(ceiling((NROW(diffs))/ncol), ncol))
         ##browser()
         if(!is.null(diffs)){
-            ##browser()
             layout(matrix(1:(2*length(diffs)),ncol=2), widths=c(7,3), heights=rep(1,length(diffs)))
             ##
             plot(diffs, attribs = attrib,
                  ##TODO: range
                  xlim=c(0,50),main=""
                  )
-            ###
+###
             uu <- do.call(rbind,lapply(diffs,function(x) data.frame(x[c("diff.min","diff.max")])))
             uu$id <- 1:length(diffs)
             ##uu$id <- factor(1:length(diffs))
             ##http://monkeysuncle.stanford.edu/?p=485
             for(i in 1:nrow(uu)){
                 plot(NA,xlim=c(0,2),ylim=c(uu$diff.min[i],uu$diff.max[i]),xlab="",
-                     ylab=sprintf("%s better -- %s better",input$baseline,input$scenario))
+                     ## TODO: add legend instead
+                     ylab=sprintf("%s better -- %s better",isolate(input$baseline),isolate(input$scenario)))
                 rect(xleft=-100, ybottom=0, xright=100, ytop=100,col=green())
                 rect(xleft=-100, ybottom=-100, xright=100, ytop=0,col=red())
                 arrows(1,uu$diff.min[i], 1, uu$diff.max[i], angle=90, code=3, length=0.1)
@@ -551,24 +561,29 @@ shinyServer(function(input, output, session) {
             ##abline(h=0,lty=2)
             ##ggplot(data=uu)+geom_errorbar(aes(x=id,ymin=diff.min,ymax=diff.max))+xlab("")+scale_x_discrete(labels="")
         }
-    })
+        ##TODO: would prefer to have width="auto" and height="auto"* length(diffs)
+    },width=400,height=function() 200*length(unique.diffs.all()$diffs)
+                                    )
 
 ################################################################################
     ## TODO: give indication of progress/delay
     ## TODO: if already run, update existing rather than re-running all
-    ## TODO: and/or add action button rather than auto compuete?
+    ## Only triggered by btn_update_traffic_ctf
+    ## TODO: remove plot if out of date
     xx.all <- reactive({
-        update.prefs()
-        update.weights()
-        species <- input$ctf_species
+        input$btn_update_traffic_ctf
+        ##update.prefs()
+        ##update.weights()
+        species <- isolate(input$ctf_species)
+        attribs <- isolate(input$attribs)
         ##print(species)
-        if(checkOkToRun() && !is.null(species)){
-            cat("all.diffs",file=stderr())
-            all.diffs <- vary_all(scen="Post90",baseline="Pre90",
-                                  ecospecies=input$ctf_species,
-                                  use.durs=as.logical(input$use_duration),
-                                  attribs.usesduration=attribs.usesduration[input$attribs],
-                                  assets=as.numeric(input$ctf_assets),
+        if(isolate(checkOkToRun()) && !is.null(species) &&!is.null(attribs)){
+            cat("all.diffs\n",file=stderr())
+            all.diffs <- vary_all(scen=isolate(input$scenario),baseline=isolate(input$baseline),
+                                  ecospecies=species,
+                                  use.durs=as.logical(isolate(input$use_duration)),
+                                  attribs.usesduration=attribs.usesduration[attribs],
+                                  assets=as.numeric(isolate(input$ctf_assets)),
                                   getSeqCtfs=getSeqCtfs10,
                                   do.par=F ##FIXME
                                   )

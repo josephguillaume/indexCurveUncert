@@ -483,11 +483,15 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                               ##          ),
                                               tabPanel("CTF results",value="ctf",
                                                        h3("Results for ctf values"),
+                                                       p(
+                                                         actionButton("btn_update_traffic_ctf","Update CTF results")
+                                                         ),
                                                        tabsetPanel(
                                                                    tabPanel("Traffic diagram",
                                                                             plotOutput("traffic_ctf")
                                                                             ),
                                                                    tabPanel("Preference curves",
+                                                                            p("Preference curves for first attribute selected"),
                                                                             plotOutput("pref_asset")
                                                                             )
                                                                    )
