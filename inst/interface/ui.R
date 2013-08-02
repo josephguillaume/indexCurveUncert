@@ -528,7 +528,15 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                                          ),
                                                        tabsetPanel(
                                                                    tabPanel("Traffic diagram",
-                                                                            plotOutput("traffic_ctf")
+                                                                            plotOutput("traffic_ctf"),
+                                                                            radioButtons("treatment_zero",
+                                                                                         HTML("<b>-</b> How is zero difference treated?"),
+                                                                                         c("As scenario"="scen",
+                                                                                           "As baseline"="base",
+                                                                                           "As scenario or baseline"="both"
+                                                                                           ),
+                                                                                         selected="As scenario or baseline"
+                                                                                         )
                                                                             ),
                                                                    tabPanel("Preference curves",
                                                                             p("Preference curves for first attribute selected"),

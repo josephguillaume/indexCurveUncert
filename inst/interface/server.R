@@ -601,37 +601,63 @@ shinyServer(function(input, output, session) {
     ## TODO: all.diffs with ctf plot
     output$traffic_ctf <- renderPlot({
         all.diffs <- xx.all()
+
         ## Extract data.frame
         tab <- as.data.frame(subset(all.diffs,subset=!is.na(diff.min)))
         ## Convert to long form
         tabm <- melt(tab,id.var=c("assetid","ctf","species","use.dur"))
         ## Convert continuous variable to discrete - which scenario is favoured
-        tabm$value <- ifelse(tabm$value>0,"Scenario","Baseline or =")
+        ## Possible values
+        tabm.levels <- switch(input$treatment_zero,
+                              "base"=c(scen="Scenario",uncertain="Uncertain",base="Baseline or ="),
+                              "scen"=c(scen="Scenario or =",uncertain="Uncertain",base="Baseline"),
+                              "both"=c(scen="Scenario or =",base="Baseline or =",uncertain="Uncertain",no.diff="No difference")
+                              )
+        tabm$value <- switch(input$treatment_zero,
+                             "base"=ifelse(tabm$value>0,tabm.levels["scen"],tabm.levels["base"]),
+                             "scen"=ifelse(tabm$value>=0,tabm.levels["scen"],tabm.levels["base"]),
+                             "both"={
+                                 value=tabm$value
+                                 value[abs(value)<0.01] <- NA ## treat zero as ambiguous
+                                 ifelse(value>0,tabm.levels["scen"],tabm.levels["base"])
+                             }
+                             )
 
         ## Check for uncertainty
-        answers <- marginalise(tabm,assetid+species+ctf~.,verbose=T)
+        answers <- marginalise(tabm,assetid+species+ctf~.,verbose=T,na.rm=TRUE)
+
+        ## Treat NAs as zero
+        if(input$treatment_zero=="both"){
+            answers$"(all)"<-as.character(answers$"(all)")
+            answers$"(all)"[is.na(answers$"(all)")]<- tabm.levels["no.diff"]
+        }
+
         answers$assetid <- ordered(answers$assetid,level=1:nrow(asset.table),label=asset.table$Name)
-        answers$"(all)" <- ordered(answers$"(all)",level=c("Scenario","Uncertain","Baseline or ="))
+        answers$"(all)" <- ordered(answers$"(all)",level=tabm.levels)
+
+        ## Colours
+        tabm.cols=c(
+        green(),
+        grey(0.9), ##rgb(241,242,241,maxColorValue=255),
+        red(),
+        "lemonchiffon"
+        )
+        names(tabm.cols) <- c(tabm.levels["scen"],tabm.levels["uncertain"],tabm.levels["base"],tabm.levels["no.diff"])
+        tabm.cols <- tabm.cols[!is.na(names(tabm.cols))]
+
         ## Traffic light CTF plot
         ##  Answer for each ctf, species & asset with ctf overlain
         pp <- ggplot(data=answers)+
             facet_wrap(~assetid,scale="free")+
                 geom_point(aes(y=species,x=ctf,col=get("(all)")),size=4)+
                     scale_color_manual(name="Which scenario\nis better",
-                                       values=c(
-                                       ##Plus
-                                       "Scenario"=green(),
-                                       ##Uncertain
-                                       "Uncertain"=rgb(241,242,241,maxColorValue=255),
-                                       ##Minus
-                                       "Baseline or ="=red()
-                                       ))+
+                                       values=tabm.cols)+
                                            ylab("Species")+
-                                               xlab("Commence-to-flow level (ML/day)")
-        ##TODO: ggplot can't set breaks for each panel?
-        ##scale_x_continuous(breaks=seq(2000,20000,by=2000))+
-        ##geom_vline(aes(xintercept=value),
-        ##data=subset(all.ctf,assetid %in% unique(answers$assetid)),linetype="dashed")
+                                               xlab("Commence-to-flow level (ML/day)")+
+                                                   theme_bw()
+                                                       ## theme(legend.position=c(.8,0.1)) ##Not suitable here
+        ## geom_vline(aes(xintercept=value),
+        ##            data=subset(all.ctf,assetid %in% unique(answers$assetid)),linetype="dashed")
         print(pp)
     })
 
