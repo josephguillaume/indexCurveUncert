@@ -38,6 +38,7 @@ matrixInput <- function(inputId, label, data,types=NULL) {
       class = 'control-group tableinput-container',
       tags$label(
         class = "control-label",
+                 'for' = inputId, ##added to help selection of this element, and be consistent with other labels used
         label,
         tags$div(
           class = 'tableinput-buttons',

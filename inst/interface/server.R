@@ -13,6 +13,9 @@ shinyServer(function(input, output, session) {
     else pref.bounds <- list()
     if(exists("pref.monoton.default")) pref.monoton <- pref.monoton.default
     else pref.monoton <- list()
+    if(exists("pref.smooth.default")) pref.smooth <- pref.smooth.default
+    else pref.smooth <- list()
+
     ## TODO: should generate automatically?
     if(exists("attribs.usesduration.default")) attribs.usesduration <- attribs.usesduration.default
     else attribs.usesduration <- NULL
@@ -92,6 +95,7 @@ shinyServer(function(input, output, session) {
             load(inFile$datapath,envir=e)
             pref.bounds <<- e$pref.bounds
             pref.monoton <<- e$pref.monoton
+            pref.smooth <- e$pref.smooth
             weight.bounds <<- e$weight.bounds
             weight.comp <<- e$weight.comp
             index.all <<- e$index.all
@@ -104,6 +108,7 @@ shinyServer(function(input, output, session) {
                         content=function(file){
                             save(pref.bounds,
                                  pref.monoton,
+                                 pref.smooth,
                                  weight.bounds,
                                  weight.comp,
                                  index.all,
@@ -174,28 +179,22 @@ shinyServer(function(input, output, session) {
                 names(dfa)=NULL
             } else dfa <- list(list(NA_real_),list(NA_real_),list(NA_real_),list(NA_real_))
             session$sendInputMessage("pref_monoton",list(data=dfa))
+            ## pref.smooth
+            df <- pref.smooth[[wpref1]]
+            session$sendInputMessage("pref_smooth",list(data=as.arrays(df,4)))
         }
         ## return current wpref
         wpref1
     })
 
-    ## input.pref.bounds <- reactive({
-    ##     wpref()
-    ##     input$pref_bounds
-    ## })
-    ## input.pref.monoton <- reactive({
-    ##     wpref()
-    ##     input$pref_monoton
-    ## })
-
-
     ## Only changes with btn_update_pref
-    ## FIXME: saving without changes after discarding actually saves discarded changes. But looks like repeated discard or new changes save correctly.
+    ## Note, browser needs to call .change() if table is changed programmatically
     update.prefs <- reactive({
         input$btn_update_pref
         wpref1 <- isolate(wpref())
+        cat("Download prefs\n",file=stderr())
+
         ## pref.bounds
-        cat("Download bounds\n",file=stderr())
         pref.bounds[[wpref1]] <<- as.data.frame(isolate(input$pref_bounds))
         ##pref.bounds[[wpref1]] <<- as.data.frame(input.pref.bounds())
         names(pref.bounds[[wpref1]]) <<- c("min.x","max.x","min.y","max.y")
@@ -209,6 +208,13 @@ shinyServer(function(input, output, session) {
         names(pref.monoton[[wpref1]]) <<- c("min.x","max.x","dir","min.step")
         pref.monoton[[wpref1]] <<- pref.monoton[[wpref1]][!apply(pref.monoton[[wpref1]],1,function(x) all(is.na(x))),,drop=FALSE]
         if(nrow(pref.monoton[[wpref1]])==0) pref.monoton[[wpref1]] <<- NULL
+
+        ## pref.smooth
+        pref.smooth[[wpref1]] <<- as.data.frame(isolate(input$pref_smooth))
+        names(pref.smooth[[wpref1]]) <<- c("min.x","max.x","min.step","max.step")
+        pref.smooth[[wpref1]] <<- pref.smooth[[wpref1]][!apply(pref.smooth[[wpref1]],1,function(x) all(is.na(x))),,drop=FALSE]
+        if(nrow(pref.smooth[[wpref1]])==0) pref.smooth[[wpref1]] <<- NULL
+
     })
 
 

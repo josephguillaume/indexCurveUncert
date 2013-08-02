@@ -65,6 +65,41 @@ $(\".control-label[for='attribs']\").html($(\".control-label[for='attribs']\").h
 }
     }); //attribs
 
+$(\".control-label[for='pref_bounds']\").click(function(event) {
+    event.preventDefault();
+$(\".control-label[for='pref_bounds']~*\").toggle()
+$(\".control-label[for='pref_bounds'] > .tableinput-buttons\").toggle()
+if ($(\".control-label[for='pref_bounds']~*\").css('display') == 'none') {
+$(\".control-label[for='pref_bounds']\").html($(\".control-label[for='pref_bounds']\").html().replace(\"<b>-</b>\",\"<b>+</b>\"));
+} else {
+$(\".control-label[for='pref_bounds']\").html($(\".control-label[for='pref_bounds']\").html().replace(\"<b>+</b>\",\"<b>-</b>\"));
+}
+}); //pref_bounds
+
+$(\".control-label[for='pref_monoton']\").click(function(event) {
+    event.preventDefault();
+$(\".control-label[for='pref_monoton']~*\").toggle()
+$(\".control-label[for='pref_monoton'] > .tableinput-buttons\").toggle()
+if ($(\".control-label[for='pref_monoton']~*\").css('display') == 'none') {
+$(\".control-label[for='pref_monoton']\").html($(\".control-label[for='pref_monoton']\").html().replace(\"<b>-</b>\",\"<b>+</b>\"));
+} else {
+$(\".control-label[for='pref_monoton']\").html($(\".control-label[for='pref_monoton']\").html().replace(\"<b>+</b>\",\"<b>-</b>\"));
+}
+}); //pref_monoton
+
+
+$(\".control-label[for='pref_smooth']\").click(function(event) {
+    event.preventDefault();
+$(\".control-label[for='pref_smooth']~*\").toggle()
+$(\".control-label[for='pref_smooth'] > .tableinput-buttons\").toggle()
+if ($(\".control-label[for='pref_smooth']~*\").css('display') == 'none') {
+$(\".control-label[for='pref_smooth']\").html($(\".control-label[for='pref_smooth']\").html().replace(\"<b>-</b>\",\"<b>+</b>\"));
+} else {
+$(\".control-label[for='pref_smooth']\").html($(\".control-label[for='pref_smooth']\").html().replace(\"<b>+</b>\",\"<b>-</b>\"));
+}
+}); //pref_smooth
+
+
 $('#toggle_all_attribs').on('click',function(evt){
  $('#attribs input:checkbox').attr('checked', ! $('#attribs input:checkbox').attr('checked'));
  $('#attribs input:checkbox').trigger('change');
@@ -123,6 +158,7 @@ $(\"#label_edit_assets\").html($(\"#label_edit_assets\").html().replace(\"<b>+</
     }); //label_edit_assets
 
 
+////////////////////////////////////////////////////////////////////////////////
 $('#label_inputs').click(function ( event ) {
     event.preventDefault();
       $(\"#label_inputs~*\").toggle();
@@ -169,6 +205,7 @@ function enable_input(evt){
 
 $('#pref_bounds').on('change.tableinput','#pref_bounds tbody',disable_input);
 $('#pref_monoton').on('change.tableinput','#pref_monoton tbody',disable_input);
+$('#pref_smooth').on('change.tableinput','#pref_smooth tbody',disable_input);
 $('#weight_bounds').on('change.tableinput','#weight_bounds tbody',disable_input);
 $('#weight_comp').on('change.tableinput','#weight_comp tbody',disable_input);
 
@@ -308,11 +345,14 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                      conditionalPanel("input.tabs=='pref'",id="pref_edit",
                                                       strong(textOutput("pref_title")),
                                                       matrixInput("pref_bounds",
-                                                                  "Bounds",
+                                                                  HTML("<b>-</b> Bounds"),
                                                                   data.frame(min.x=NA,max.x=NA,min.y=NA,max.y=NA),types=rep("numeric",4)),
                                                       matrixInput("pref_monoton",
-                                                                  "Up or down",
+                                                                  HTML("<b>-</b> Up or down"),
                                                                   data.frame(min.x=NA,max.x=NA,dir=NA,min.step=NA),types=rep("numeric",4)),
+                                                      matrixInput("pref_smooth",
+                                                                  HTML("<b>-</b> Smoothness"),
+                                                                  data.frame(min.x=NA,max.x=NA,min.step=NA,max.step=NA),types=rep("numeric",4)),
                                                       p(
                                                         actionButton("btn_update_pref","Update changes"),
                                                         actionButton("btn_discard_pref","Discard changes")
