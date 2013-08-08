@@ -491,6 +491,7 @@ shinyServer(function(input, output, session) {
         uu$id <- 1:length(diffs)
         ##uu$id <- factor(1:length(diffs))
         ##http://monkeysuncle.stanford.edu/?p=485
+        par(mar=c(5.1,4.1,2.1,2.1))
         plot(NA,xlim=c(0,nrow(uu)+1),ylim=range(c(uu$diff.min,uu$diff.max)),xlab="",
              ylab=sprintf("%s better -- %s better",input$baseline,input$scenario))
         rect(xleft=-100, ybottom=0, xright=100, ytop=100,col=green(),border=NA)

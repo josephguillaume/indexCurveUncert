@@ -513,7 +513,7 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                                        h3("Visualisation of weights"),
                                                        div(style="position:relative",
                                                            ##TODO: instead just set additional classes for both outputs?
-                                                           div(uiOutput("weights"),style="position:absolute;width:50%;top:50%;height:10em;margin-top:-5em"),
+                                                           div(uiOutput("weights"),style="position:absolute;width:50%;top:10%"),
                                                            div(plotOutput("plot_weight_result"),style="position:absolute;width:50%;right:0"),
                                                            div(style="clear:both;height:300px") ##so that they are side by side
                                                            ),
