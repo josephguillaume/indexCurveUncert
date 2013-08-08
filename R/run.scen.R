@@ -38,7 +38,10 @@ dayPrefsDur <- function(xx,dir,idx,attrib,attribs.usesduration){
   ## TODO: better id number of days
   if(is.na(which.dur)){ ##Already daily
     pp <- run.pref(xx,attrib,dir=dir)(idx$events[[attrib]])
-    stopifnot(length(pp)==idx$ndays)
+    stopifnot(length(pp)<=idx$ndays)
+    ## Pad difference between actual events and ndays, for NAs
+    ## TODO: always appropriate?
+    pp <- c(pp,rep(0,idx$ndays-length(idx$events[[attrib]])))
   } else if (xx$use.dur){ ##Treat value as average across days -> repeat
     pp <- unlist(lapply(1:length(idx$events[[attrib]]),
                         function(i) rep(idx$events[[attrib]][i],idx$events[[which.dur]][i])))
@@ -49,7 +52,7 @@ dayPrefsDur <- function(xx,dir,idx,attrib,attribs.usesduration){
     pp <- unlist(lapply(1:length(idx$events[[attrib]]),
                         function(i) rep(ff(idx$events[[attrib]][i])/idx$events[[which.dur]][i],
                                         idx$events[[which.dur]][i])))
-    pp <- c(rep(0,idx$ndays-length(pp)),pp)    
+    pp <- c(rep(0,idx$ndays-length(pp)),pp)
   }
   pp
 }
