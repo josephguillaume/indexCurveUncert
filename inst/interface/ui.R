@@ -1,6 +1,7 @@
 library(shiny)
 library(indexCurveUncert)
 
+
 shinyUI(pageWithSidebar(
                         headerPanel('Ecological suitability indices',
                                     singleton(
@@ -510,11 +511,13 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                                        ),
                                               tabPanel("Weights",value="weights",
                                                        h3("Visualisation of weights"),
-                                                       tableOutput("weights"),
-                                                       ## TODO: better to have line with tableOutput
-                                                       textInput("current_weight_run",""),
-                                                       selectInput("which_weight_run","Which run to plot",
-                                                                   choices="",selected=NULL),
+                                                       div(style="position:relative",
+                                                           ##TODO: instead just set additional classes for both outputs?
+                                                           div(uiOutput("weights"),style="position:absolute;width:50%;top:50%;height:10em;margin-top:-5em"),
+                                                           div(plotOutput("plot_weight_result"),style="position:absolute;width:50%;right:0"),
+                                                           div(style="clear:both;height:300px") ##so that they are side by side
+                                                           ),
+                                                       strong(textOutput("plot_weight_classes_title")),
                                                        plotOutput("plot_weight_classes")
                                                        ),
                                               ## tabPanel("Asset result",value="single_asset",

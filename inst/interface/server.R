@@ -2,6 +2,54 @@ library(shiny)
 library(indexCurveUncert)
 library(ggplot2)
 
+radioButtonsTable <-
+function (inputId, label, data,choices,selected=NULL)
+{
+    choices <- shiny:::choicesWithNames(choices)
+    if (is.null(selected))
+        selected <- names(choices)[[1]]
+    inputTags <- list()
+    for (i in seq_along(choices)) {
+        id <- paste(inputId, i, sep = "")
+        name <- names(choices)[[i]]
+        value <- choices[[i]]
+        inputTag <- tags$input(type = "radio", name = inputId,
+                               id = id, value = value)
+        if (identical(name, selected))
+            inputTag$attribs$checked = "checked"
+        ## spanTag <- tags$span(name)
+        ## labelTag <- tags$label(class = "radio",inputTag,spanTag)
+        inputTags[[length(inputTags) + 1]] <- inputTag
+    }
+    tags$div(id = inputId, class = "control-group shiny-input-radiogroup",
+             tags$label(class = "control-label", `for` = inputId,
+                        label),
+             tags$table(
+                        id = inputId,
+                        ##class = 'tableinput data table table-bordered table-condensed',
+                        tags$thead(
+                                   ##class = 'hide',
+                                   tags$tr(
+                                           lapply(names(data), function(name) {
+                                               tags$th(name)
+                                           }),
+                                           tags$th("plot")
+                                           )
+                                   ),
+                        tags$tbody(
+                                   lapply(1:nrow(data), function(i) {
+                                       tags$tr(
+                                               lapply(names(data), function(name) {
+                                                   tags$td(as.character(data[i,name]))
+                                               }),
+                                               tags$td(inputTags[[i]])
+                                               )
+                                   })
+                                   )
+                        )
+             )
+}
+
 shinyServer(function(input, output, session) {
 
     getPrefConstraints <- getPrefConstraintsLists
@@ -349,7 +397,6 @@ shinyServer(function(input, output, session) {
     })
 
     ## Only changes with btn_update_weight
-    ## FIXME: Not whole matrix of weight_bounds updating at a time.
     update.weights <- reactive({
         input$btn_update_weights
         species <- isolate(input$species_shown)
@@ -422,23 +469,40 @@ shinyServer(function(input, output, session) {
                 )
     })
 
-    output$weights <- renderTable({
+    output$weights <- renderUI({
         xx.weights()
         ##TODO: duplicate checking?
         if (!is.null(xx.weights()) && input$species_shown %in% specieslist) {
             ##browser() ##constraints used in checking weights
-            what.weights(xx.weights())
-        } else{
-            NULL
-        }
+            tab <- what.weights(xx.weights())
+            ## Remove identifying columns as already determined by user selection
+            ## Remove diff column because visualised instead
+            if(length(unique(tab$use.dur))==1) tab<-tab[,-c(1:4,6)]
+            else tab <- tab[,-c(1:3,6)]
+            radioButtonsTable("which_weight_run", "Automatically-generated weights", tab,
+                              choices=paste(sort(rep(1:length(xx.weights()),2)),tab$run.type,sep="_")
+                              )
+        } else { NULL }
     })
+
+    output$plot_weight_result <- renderPlot({
+        diffs <- xx.weights()
+        uu <- do.call(rbind,lapply(diffs,function(x) data.frame(x[c("diff.min","diff.max")])))
+        uu$id <- 1:length(diffs)
+        ##uu$id <- factor(1:length(diffs))
+        ##http://monkeysuncle.stanford.edu/?p=485
+        plot(NA,xlim=c(0,nrow(uu)+1),ylim=range(c(uu$diff.min,uu$diff.max)),xlab="",
+             ylab=sprintf("%s better -- %s better",input$baseline,input$scenario))
+        rect(xleft=-100, ybottom=0, xright=100, ytop=100,col=green(),border=NA)
+        rect(xleft=-100, ybottom=-100, xright=100, ytop=0,col=red(),border=NA)
+        for(i in 1:nrow(uu)) arrows(uu$id[i],uu$diff.min[i], uu$id[i], uu$diff.max[i], angle=90, code=3, length=0.1)
+    },height=300,width=function() length(xx.weights())*200)
 
     ## TODO: should only use local variables to be concurrency-safe
     ## TODO: allow selecting which run & min or max weights
     ## TODO: need isValid function
     ## FIXME: error length(pp) == idx$ndays is not TRUE
     output$plot_weight_classes <- renderPlot({
-        input$current_weight_run
         input$which_weight_run
         weight.setting()
         ready.structure()
@@ -454,23 +518,21 @@ shinyServer(function(input, output, session) {
         }
         sidx <- NULL
         bidx <- NULL
-        if(input$species_shown %in% specieslist && weight.setting()==input$current_weight_run){
+        if(input$species_shown %in% specieslist){
             wl <- strsplit(input$which_weight_run,"_")[[1]]
-            cat(wl,file=stderr())
-            rr <- run.scen(xx.weights()[[as.numeric(wl[2])]],dir=wl[1],attribs.usesduration[input$attribs])
+            ##cat(wl,file=stderr())
+            rr <- run.scen(xx.weights()[[as.numeric(wl[1])]],dir=wl[2],attribs.usesduration[input$attribs])
+            par(mar=c(5.1,4.1,2.1,2.1))
             plot.weight.classes((sapply(rr$pp.s,mean)-sapply(rr$pp.b,mean))*100, ##sapply(rr$pp.s,sum)-sapply(rr$pp.b,sum),
-                                current.weights=xx.weights()[[as.numeric(wl[2])]][[sprintf("pars.%s.weights", wl[1])]])
+                                current.weights=xx.weights()[[as.numeric(wl[1])]][[sprintf("pars.%s.weights", wl[2])]])
         } else { NULL }
     })
 
-    observe({
-        xx.weights()
-        choices <- apply(expand.grid(c("min","max"),1:length(xx.weights())),1,paste,collapse="_")
-        names(choices) <- unlist(lapply(xx.weights(),function(r) sprintf("%d_%d_%s_%s_%s",r$assetid,r$ctf,r$species,r$use.dur,c("min","max"))))
-        updateSelectInput(session,"which_weight_run",
-                          choices=choices,select=names(choices)[1])
-        updateTextInput(session,"current_weight_run",value=weight.setting())
-    })
+    output$plot_weight_classes_title <-
+        renderText({
+            wl <- strsplit(input$which_weight_run,"_")[[1]]
+            sprintf("Which weights would favour the scenario/baseline when using %s preference curves",wl[2])
+        })
 
 ################################################################################
     xx.asset <- reactive({
