@@ -5,9 +5,11 @@ what.weights <- function(x){
                         function(r)
                         cbind(as.data.frame(r[c("assetid", "ctf", "species", "use.dur")]),
                               rbind(
-                                    c(diff=r$diff.min,
+                                    c(run.type="min",
+                                      diff=r$diff.min,
                                       r$"pars.min.weights"),
                                     c(
+                                      run.type="max",
                                       diff=r$diff.max,
                                       r$"pars.max.weights")
                                     ))
