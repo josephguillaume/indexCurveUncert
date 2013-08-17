@@ -66,39 +66,18 @@ $(\".control-label[for='attribs']\").html($(\".control-label[for='attribs']\").h
 }
     }); //attribs
 
-$(\".control-label[for='pref_bounds']\").click(function(event) {
-    event.preventDefault();
-$(\".control-label[for='pref_bounds']~*\").toggle()
-$(\".control-label[for='pref_bounds'] > .tableinput-buttons\").toggle()
-if ($(\".control-label[for='pref_bounds']~*\").css('display') == 'none') {
-$(\".control-label[for='pref_bounds']\").html($(\".control-label[for='pref_bounds']\").html().replace(\"<b>-</b>\",\"<b>+</b>\"));
-} else {
-$(\".control-label[for='pref_bounds']\").html($(\".control-label[for='pref_bounds']\").html().replace(\"<b>+</b>\",\"<b>-</b>\"));
-}
-}); //pref_bounds
 
-$(\".control-label[for='pref_monoton']\").click(function(event) {
+// toggle visibility of table-inputs
+$(\".control-label-text\").click(function(event) {
     event.preventDefault();
-$(\".control-label[for='pref_monoton']~*\").toggle()
-$(\".control-label[for='pref_monoton'] > .tableinput-buttons\").toggle()
-if ($(\".control-label[for='pref_monoton']~*\").css('display') == 'none') {
-$(\".control-label[for='pref_monoton']\").html($(\".control-label[for='pref_monoton']\").html().replace(\"<b>-</b>\",\"<b>+</b>\"));
+$(this).parent().next('.control-label~*').toggle()
+$(this).parent().children('.tableinput-buttons').toggle()
+if ($(this).parent().next('.control-label~*').css('display') == 'none') {
+$(this).html($(this).html().replace(\"<b>-</b>\",\"<b>+</b>\"));
 } else {
-$(\".control-label[for='pref_monoton']\").html($(\".control-label[for='pref_monoton']\").html().replace(\"<b>+</b>\",\"<b>-</b>\"));
+$(this).html($(this).html().replace(\"<b>+</b>\",\"<b>-</b>\"));
 }
-}); //pref_monoton
-
-
-$(\".control-label[for='pref_smooth']\").click(function(event) {
-    event.preventDefault();
-$(\".control-label[for='pref_smooth']~*\").toggle()
-$(\".control-label[for='pref_smooth'] > .tableinput-buttons\").toggle()
-if ($(\".control-label[for='pref_smooth']~*\").css('display') == 'none') {
-$(\".control-label[for='pref_smooth']\").html($(\".control-label[for='pref_smooth']\").html().replace(\"<b>-</b>\",\"<b>+</b>\"));
-} else {
-$(\".control-label[for='pref_smooth']\").html($(\".control-label[for='pref_smooth']\").html().replace(\"<b>+</b>\",\"<b>-</b>\"));
-}
-}); //pref_smooth
+});
 
 
 $('#toggle_all_attribs').on('click',function(evt){
@@ -346,13 +325,13 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                      conditionalPanel("input.tabs=='pref'",id="pref_edit",
                                                       strong(textOutput("pref_title")),
                                                       matrixInput("pref_bounds",
-                                                                  HTML("<b>-</b> Bounds"),
+                                                                  span(class="control-label-text",tags$b("-"),"Bounds"),
                                                                   data.frame(min.x=NA,max.x=NA,min.y=NA,max.y=NA),types=rep("numeric",4)),
                                                       matrixInput("pref_monoton",
-                                                                  HTML("<b>-</b> Up or down"),
+                                                                  span(class="control-label-text",tags$b("-"),"Up or down"),
                                                                   data.frame(min.x=NA,max.x=NA,dir=NA,min.step=NA),types=rep("numeric",4)),
                                                       matrixInput("pref_smooth",
-                                                                  HTML("<b>-</b> Smoothness"),
+                                                                  span(class="control-label-text",tags$b("-"),"Smoothness"),
                                                                   data.frame(min.x=NA,max.x=NA,min.step=NA,max.step=NA),types=rep("numeric",4)),
                                                       p(
                                                         actionButton("btn_update_pref","Update changes"),
@@ -362,11 +341,11 @@ $('#btn_clear_bkpt').on('click',function(evt){
                                      conditionalPanel("input.tabs=='weights'",id="weight_edit",
                                                       strong(textOutput("weight_title")),
                                                       matrixInput("weight_bounds",
-                                                                  "Bounds",
+                                                                  span(class="control-label-text",tags$b("-"),"Bounds"),
                                                                   data.frame(attrib=NA,min.weight=NA,max.weight=NA,stringsAsFactors=FALSE),
                                                                   types=c("character","numeric","numeric")),
                                                       matrixInput("weight_comp",
-                                                                  "Comparison",
+                                                                  span(class="control-label-text",tags$b("-"),"Comparison"),
                                                                   data.frame(attrib1=NA,attrib2=NA,dir=NA,min.gap=NA),
                                                                   types=c("character","character","character","numeric")),
                                                       p(
