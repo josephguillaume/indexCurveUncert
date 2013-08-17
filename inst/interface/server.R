@@ -281,13 +281,10 @@ shinyServer(function(input, output, session) {
 
     ## depends on species,asset,ctf,use_duration,attrib,update.prefs
     xx <- reactive({
+        cat("envindex.diff.qp\n",file=stderr())
+        ## Dependencies
         ready.structure()
         update.prefs()
-        cat("envindex.diff.qp\n",file=stderr())
-        ##index.all$test_dry.csv<<-input$bkpts_dry
-        ##cat(input$use_duration,"\n")
-        ##cat(str(getPrefConstraints("test","dry"),file=stderr()))
-        ## browser() ## see what environment envindex.diff.qp is working in
         input$scenario
         input$baseline
         input$species_shown
@@ -295,7 +292,13 @@ shinyServer(function(input, output, session) {
         input$ctf_shown
         input$use_duration
         input$attrib_shown
-        if(checkOkToRun()){
+        checkOkToRun()
+        ## browser() ## see what environment envindex.diff.qp is working in
+        if(!input$attrib_shown %in% names(attribs.usesduration)) {
+            return(sprintf("Attribute '%s' not recognised",input$attrib_shown))
+        } else if(is.null(index.all[[isolate(wpref())]])) {
+            return(sprintf("Attribute '%s' is not used for species '%s' (no breakpoints defined)",input$attrib_shown,input$species_shown))
+        } else if(checkOkToRun()){
             envindex.diff.qp(scen=input$scenario,baseline=input$baseline,
                              ecospecies=input$species_shown,
                              assetid=as.numeric(input$assets_shown),
@@ -303,6 +306,8 @@ shinyServer(function(input, output, session) {
                              use.durs=as.logical(input$use_duration),
                              attribs.usesduration = attribs.usesduration[input$attrib_shown]
                              )
+        } else {
+            return(NULL)
         }
     })
 
@@ -310,30 +315,30 @@ shinyServer(function(input, output, session) {
 
     ## depends on xx,attrib_shown or range
     output$pref <- renderPlot({
-        ## par(mfrow=c(length(input$attribs),length(input$species)))
-        ## plot(xx())
-        ##cat(input$attrib_shown,"\n")
-        ##plot.unique.prefs(xx(),attrib=input$attrib_shown)
-##############
-        ## TODO: adjust ncol
-        diffs <- xx()
         cat("Preference plot\n")
+        ## Dependencies
+        diffs <- xx()
+        input$range
+        input$baseline
+        ## Report wrong input to xx
+        if(is.character(diffs)) stop(diffs)
+        ## Deduplicate diffs (either 1 or 2, depending on duration)
         attrib <- isolate(input$attrib_shown)
         del <- duplicated(lapply(diffs, function(x) do.call(c, x[sprintf("pars.%s.%s", c("max", "min"), attrib)])))
         diffs <- diffs[!del]
-        ncol=min(4,NROW(diffs))
-        #3par(mfrow = c(ceiling(NROW(diffs)/ncol), ncol))
-        ##par(mfrow = c(ceiling((NROW(diffs))/ncol), ncol))
         ##browser()
         if(!is.null(diffs)){
+            uu <- do.call(rbind,lapply(diffs,function(x) data.frame(x[c("diff.min","diff.max")])))
+            if(all(is.na(uu))) stop("All results NA")
+            ##
             if(NROW(diffs)==1) layout(t(1:2), widths=c(7,3), heights=1)
             if(NROW(diffs)==2) layout(t(1:3), widths=c(35,35,30), heights=1)
-            ##
-            plot(diffs, attribs = input$attrib_shown,
+            ## First panel - preference curve (using plot.envindex_bound)
+            plot(diffs, attribs = attrib,
                  xlim=c(0,input$range),main=""
                  )
-            ###
-            uu <- do.call(rbind,lapply(diffs,function(x) data.frame(x[c("diff.min","diff.max")])))
+            ### Second panel - result
+            ## TODO: meaningful x axis
             uu$id <- 1:length(diffs)
             ##uu$id <- factor(1:length(diffs))
             ##http://monkeysuncle.stanford.edu/?p=485
@@ -519,7 +524,7 @@ shinyServer(function(input, output, session) {
         }
         sidx <- NULL
         bidx <- NULL
-        if(input$species_shown %in% specieslist){
+        if(input$species_shown %in% specieslist && !is.null(input$which_weight_run)){
             wl <- strsplit(input$which_weight_run,"_")[[1]]
             ##cat(wl,file=stderr())
             rr <- run.scen(xx.weights()[[as.numeric(wl[1])]],dir=wl[2],attribs.usesduration[input$attribs])
