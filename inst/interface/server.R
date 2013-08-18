@@ -317,9 +317,8 @@ shinyServer(function(input, output, session) {
     output$pref <- renderPlot({
         cat("Preference plot\n")
         ## Dependencies
-        diffs <- xx()
         input$range
-        input$baseline
+        diffs <- xx()
         ## Report wrong input to xx
         if(is.character(diffs)) stop(diffs)
         ## Deduplicate diffs (either 1 or 2, depending on duration)
