@@ -16,19 +16,19 @@ function(x,y,...,attribs=NA,subset=T,
   })]
   wanted.attribs <- attribs
   wanted.main <- main
+  dots=list(...)
+  dots=modifyList(list(
+  type="l",col=red(),
+  ylab="Preference",ylim=c(0,1),
+  xlab=capwords(attrib),
+  lty="dashed",lwd=3),dots)
   for(o in x){
     if(is.na(wanted.attribs)) attribs <- names(o$pars.min.weights)
     for(attrib in attribs){
       cpt <- index.all[[sprintf("%s_%s.csv", o$species,attrib)]]
       if(is.null(cpt)) next
       constr <- getPrefConstraints(o$species,attrib)
-      plot(cpt[,1],
-           o[[sprintf("pars.min.%s",attrib)]],
-           type="l",col=red(),
-           ylab="Preference",ylim=c(0,1),
-           xlab=capwords(attrib),
-           lty="dashed",lwd=3
-           )
+      do.call("plot",modifyList(dots,list(x=cpt[,1],y=o[[sprintf("pars.min.%s",attrib)]])))
       polygon(x=c(cpt[,1],rev(cpt[,1])),
               y=c(constr$bounds$upper,
                 rev(constr$bounds$lower)),col=grey(0.9),
