@@ -9,7 +9,7 @@ subset.envindex.bound <- function(x,subset=T){
     out
 }
 
-"[.envindex.bound" <- function (x, i) 
+"[.envindex.bound" <- function (x, i)
 {
     cl <- oldClass(x)
     y <- NextMethod("[")
@@ -18,8 +18,8 @@ subset.envindex.bound <- function(x,subset=T){
 }
 
 
-as.data.frame.envindex.bound <- function(x,row.names=NULL,optional=FALSE,...){
-  keep.cols <- which(sapply(x[[1]],length)==1)
+as.data.frame.envindex.bound <- function(x,row.names=NULL,optional=FALSE,keep.cols=NULL,...){
+  if(is.null(keep.cols)) keep.cols <- which(sapply(x[[1]],length)==1)
   ##keep.cols <- c("assetid","ctf","species","diff.min","diff.max","use.dur")
   do.call(rbind,lapply(x,function(r) as.data.frame(r[keep.cols])))
 }
