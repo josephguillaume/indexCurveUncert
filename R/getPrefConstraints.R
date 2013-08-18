@@ -181,7 +181,7 @@ getPrefConstraintsLists <- function(species,attrib){
   ##   warning("pref.single.extreme.notp not found, setting to NULL")
   ##   pref.single.extreme.notp <<- NULL
   ## }
-  
+
   ## Convert real-valued bounds
   bounds <- list(lower=rep(0,nx),upper=rep(1,nx))
   this.bounds <- pref.bounds[[sprintf("%s_%s.csv", species,attrib)]]
@@ -209,6 +209,7 @@ getPrefConstraintsLists <- function(species,attrib){
                   min.gap=this.monoton$dir[i]*this.monoton$min.step[i]
                   )
       cc <- cc[cc[,1]>cc[,2],]
+      cc$min.gap <- cc$min.gap*(cpt.x[cc$a]-cpt.x[cc$b])
       constr <- rbind(constr,cc)
     }
   }
@@ -229,7 +230,7 @@ getPrefConstraintsLists <- function(species,attrib){
       constr <- rbind(constr,cc1,cc2)
     }
   }
-  
+
   ## Add comparison constraints
   ## from min.x1,max.x1,min.x2,max.x2,dir,min.gap
   this.comp <- pref.comp[[sprintf("%s_%s.csv", species,attrib)]]
@@ -248,7 +249,7 @@ getPrefConstraintsLists <- function(species,attrib){
   }
   ##
   ## Add single extreme constraint
-  
+
   return(list(constr=constr,
               bounds=bounds))
 }
