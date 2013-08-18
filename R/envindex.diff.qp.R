@@ -101,8 +101,9 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                 pars.max <- c(list(weights=w.max$ws),
                               lapply(prefs,function(x) x$max$ys))
             }
-            all.prefs <- c(all.prefs,list(c(sidx[c("assetid","ctf")],
-                                            list(species=species,
+            all.prefs <- c(all.prefs,list(c(sidx[c("assetid","ctf","scenario")],
+                                            list(baseline = bidx$scenario,
+                                                 species=species,
                                                  use.dur=use.dur,
                                                  diff.min=w.min$obj,
                                                  diff.max=w.max$obj),
