@@ -325,11 +325,6 @@ shinyServer(function(input, output, session) {
         attrib <- isolate(input$attrib_shown)
         del <- duplicated(lapply(diffs, function(x) do.call(c, x[sprintf("pars.%s.%s", c("max", "min"), attrib)])))
         diffs <- diffs[!del]
-        ## Multiply parameters by 100
-        for(i in 1:length(diffs)){
-            diffs[[i]][[sprintf("pars.min.%s",attrib)]] <- diffs[[i]][[sprintf("pars.min.%s",attrib)]]*100
-            diffs[[i]][[sprintf("pars.max.%s",attrib)]] <- diffs[[i]][[sprintf("pars.max.%s",attrib)]]*100
-        }
         ##browser()
         if(!is.null(diffs)){
             uu <- do.call(rbind,lapply(diffs,function(x) data.frame(x[c("diff.min","diff.max")])))
@@ -339,7 +334,6 @@ shinyServer(function(input, output, session) {
             if(NROW(diffs)==2) layout(t(1:3), widths=c(35,35,30), heights=1)
             ## First panel - preference curve (using plot.envindex_bound)
             plot(diffs, attribs = attrib,
-                 ylim=c(0,100),
                  xlim=c(0,input$range),main=""
                  )
             ### Second panel - result
