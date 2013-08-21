@@ -20,7 +20,6 @@ function(x,y,...,attribs=NA,subset=T,
   dots=modifyList(list(
   type="l",col=red(),
   ylab="Preference",ylim=c(0,1),
-  xlab=capwords(attrib),
   lty="dashed",lwd=3),dots)
   for(o in x){
     if(is.na(wanted.attribs)) attribs <- names(o$pars.min.weights)
@@ -28,7 +27,8 @@ function(x,y,...,attribs=NA,subset=T,
       cpt <- index.all[[sprintf("%s_%s.csv", o$species,attrib)]]
       if(is.null(cpt)) next
       constr <- getPrefConstraints(o$species,attrib)
-      do.call("plot",modifyList(dots,list(x=cpt[,1],y=o[[sprintf("pars.min.%s",attrib)]])))
+      ## TODO: allow xlab to be overridden
+      do.call("plot",modifyList(dots,list(x=cpt[,1],y=o[[sprintf("pars.min.%s",attrib)]], xlab=capwords(attrib))))
       polygon(x=c(cpt[,1],rev(cpt[,1])),
               y=c(constr$bounds$upper,
                 rev(constr$bounds$lower)),col=grey(0.9),
