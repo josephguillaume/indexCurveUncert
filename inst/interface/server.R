@@ -52,21 +52,38 @@ function (inputId, label, data,choices,selected=NULL)
 
 shinyServer(function(input, output, session) {
 
-    getPrefConstraints <- getPrefConstraintsLists
-    getWeightConstraints <- getWeightConstraintsLists
+    if(!exists("getPrefConstraints")) getPrefConstraints <- getPrefConstraintsLists
+    if(!exists("getWeightConstraints")) getWeightConstraints <- getWeightConstraintsLists
 
-    if(exists("index.all.default")) index.all <- index.all.default
-    else index.all <- list()
-    if(exists("pref.bounds.default")) pref.bounds <- pref.bounds.default
-    else pref.bounds <- list()
-    if(exists("pref.monoton.default")) pref.monoton <- pref.monoton.default
-    else pref.monoton <- list()
-    if(exists("pref.smooth.default")) pref.smooth <- pref.smooth.default
-    else pref.smooth <- list()
+    if(exists("index.all.default")) {
+      index.all <- index.all.default
+    } else {
+      warning("index.all.default not defined, using empty list")
+      index.all <- list()
+    }
+    if(exists("pref.bounds.default")) {
+      pref.bounds <- pref.bounds.default
+    } else {
+      warning("pref.bounds.default not defined, using empty list")
+      pref.bounds <- list()
+    }
+    if(exists("pref.monoton.default")) {
+      pref.monoton <- pref.monoton.default
+    } else {
+      warning("pref.monoton.default not defined, using empty list")
+      pref.monoton <- list()
+    }
+    if(exists("pref.smooth.default")) {
+      pref.smooth <- pref.smooth.default
+    }  else {
+      warning("pref.smooth.default not defined, using empty list")
+      pref.smooth <- list()
+    }
 
     ## TODO: should generate automatically?
     if(exists("attribs.usesduration.default")) attribs.usesduration <- attribs.usesduration.default
-    else attribs.usesduration <- NULL
+    #else attribs.usesduration <- NULL
+    else stop("attribs.usesduration.default not defined")
 
     ## TODO: use existing
     weight.bounds <- list()
@@ -616,7 +633,8 @@ shinyServer(function(input, output, session) {
             ##
             plot(diffs, attribs = attrib,
                  ##TODO: range
-                 xlim=c(0,50),main=""
+                 ##xlim=c(0,50),
+                 main=""
                  )
 ###
             uu <- do.call(rbind,lapply(diffs,function(x) data.frame(x[c("diff.min","diff.max")])))
@@ -672,7 +690,7 @@ shinyServer(function(input, output, session) {
         ## Extract data.frame
         tab <- as.data.frame(subset(all.diffs,subset=!is.na(diff.min)))
         ## Convert to long form
-        tabm <- melt(tab,id.var=c("assetid","ctf","species","use.dur"))
+        tabm <- melt(tab,id.var=c("assetid","ctf","species","use.dur","scenario","baseline"))
         ## Convert continuous variable to discrete - which scenario is favoured
         ## Possible values
         tabm.levels <- switch(input$treatment_zero,
