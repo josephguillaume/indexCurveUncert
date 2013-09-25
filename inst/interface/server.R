@@ -96,6 +96,7 @@ shinyServer(function(input, output, session) {
     environment(plot.unique.prefs) <- environment()
     environment(vary_all) <- environment()
     environment(showPrefConstraintsLists) <- environment()
+    environment(run.scen)<-environment()
 
     ##TODO: trigger observe when document onready
     ##browser()
