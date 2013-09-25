@@ -97,6 +97,8 @@ shinyServer(function(input, output, session) {
     environment(vary_all) <- environment()
     environment(showPrefConstraintsLists) <- environment()
     environment(run.scen)<-environment()
+    environment(dayPrefsDur)<-environment()
+    environment(run.pref)<-environment()
 
     ##TODO: trigger observe when document onready
     ##browser()
