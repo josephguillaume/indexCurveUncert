@@ -28,7 +28,7 @@ function(x,y,...,attribs=NA,subset=T,
       if(is.null(cpt)) next
       constr <- getPrefConstraints(o$species,attrib)
       ## TODO: allow xlab to be overridden
-      do.call("plot",modifyList(dots,list(x=cpt[,1],y=o[[sprintf("pars.min.%s",attrib)]], xlab=capwords(attrib))))
+      do.call("plot",force(modifyList(dots,list(x=cpt[,1],y=o[[sprintf("pars.min.%s",attrib)]], xlab=capwords(attrib)))))
       polygon(x=c(cpt[,1],rev(cpt[,1])),
               y=c(constr$bounds$upper,
                 rev(constr$bounds$lower)),col=grey(0.9),
