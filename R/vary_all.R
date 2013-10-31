@@ -20,7 +20,7 @@ vary_all <- function(assets,do.par=T,getSeqCtfs,cache.attribs=T,...){
                                         #st <- proc.time()
                  all.diffs <-
                    c(all.diffs,
-                     envindex.diff.qp(assetid=assetid,ctf=ctf,...
+                     envindex.diff.qp(assetid=assetid,ctf=ctf,cache.attribs=cache.attribs,...
                                       ))
                                         #print(proc.time()-st)
                }
