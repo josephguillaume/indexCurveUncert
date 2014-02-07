@@ -875,6 +875,7 @@ shinyServer(function(input, output, session) {
 ################################################################################
 
     observe({
+        cat("Upload species\n",file=stderr())
         ready.structure()
         input$btn_discard_species
         updateCheckboxGroupInput(session,"delete_species",choices=specieslist,selected=NULL)
@@ -904,6 +905,7 @@ shinyServer(function(input, output, session) {
 ################################################################################
     ##data.frame(ID=NA,Gauge=NA,Name=NA,Event_threshold=NA)
     observe({
+        cat("Upload asset.table\n",file=stderr())
         ready.structure()
         input$btn_discard_assets
         df <- subset(asset.table,select=c(ID,Gauge,Name,Event_threshold))
@@ -912,6 +914,7 @@ shinyServer(function(input, output, session) {
 
 ################################################################################
     observe({
+        cat("Upload attribs\n",file=stderr())
         ready.structure()
         input$btn_discard_attribs
         df <- data.frame(Attribute=names(attribs.usesduration),Duration=attribs.usesduration)
