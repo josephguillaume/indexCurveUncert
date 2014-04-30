@@ -123,6 +123,8 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
 
 envindex.diff.getdata <-
 function(...,scen,baseline){
+  ## FIXME: Universal assign is for backwards compatibility
   sidx <<- eventattrib.scen(...,scenario=scen)
   bidx <<- eventattrib.scen(...,scenario=baseline)
+  invisible(list(sidx=sidx,bidx=bidx))
 }
