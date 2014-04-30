@@ -96,6 +96,7 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                                     constr=constr$constr)
 
                 ## All model parameters
+                bkpts <- lapply(prefs,function(x) index.all[[sprintf("%s_%s.csv", x$species, x$attrib)]][,1])
                 pars.min <- c(list(weights=w.min$ws),
                               lapply(prefs,function(x) x$min$ys))
                 pars.max <- c(list(weights=w.max$ws),
@@ -107,6 +108,7 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                                                  use.dur=use.dur,
                                                  diff.min=w.min$obj,
                                                  diff.max=w.max$obj),
+                                            bkpts=bkpts,
                                             pars.min=pars.min,
                                             pars.max=pars.max
                                             )))
