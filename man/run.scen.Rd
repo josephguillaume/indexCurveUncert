@@ -8,7 +8,7 @@
   Calculate index value for each measurement of scenario and baseline datasets
 }
 \usage{
-run.scen(xx, dir = "max", attribs.usesduration, data=NULL)
+run.scen(xx, dir = "max", attribs.usesduration, data=NULL,calc.mean=TRUE,rep.dur=TRUE)
 run.pref(xx, attrib, dir = "max") 
 }
 \arguments{
@@ -31,6 +31,10 @@ run.pref(xx, attrib, dir = "max")
     List with elements \code{sidx} and \code{bidx} as provided by \code{envindex.diff.getdata}
     If \code{NULL}, \code{envindex.diff.getdata} is called
   }
+  \item{calc.mean}{If \code{TRUE}, i.e. by default, compares mean suitability values between the scen and baseline scenarios. Otherwise, compares total suitability values
+  }
+  \item{rep.dur}{If \code{TRUE}, attempts to calculate an index per data point by repeating indices by their specified durations. This allows attributes with different frequencies to be compared, but only works if durations are positive integer values.
+  }
 }
 \details{
   Note that order of measurements is not necessarily preserved by
@@ -42,9 +46,8 @@ run.pref(xx, attrib, dir = "max")
   index value for a given attribute value.
   
   \code{run.scen} returns a list with elements:
-  \item{total.diff}{Total difference between scenarios with weighted sum}
-  \item{total.diff.attribs}{Total difference between scenarios for each attribute}
-  \item{mean.diff.attribs}{Mean difference between scenarios for each attribute}
+  \item{total.diff}{Difference between scenarios with weighted sum. Difference of means if \code{calc.mean=TRUE}, difference of totals otherwise}
+  \item{total.diff.attribs}{Total difference between scenarios for each attribute. Difference of means if \code{calc.mean=TRUE}, difference of totals otherwise}
   \item{pp.s}{List of index values for each measurement for each
     attribute for the scenario dataset}
   \item{pp.b}{List of index values for each measurement for each
