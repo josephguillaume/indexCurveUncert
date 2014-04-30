@@ -33,7 +33,17 @@ weight.classes <- function(x){
     ws.all
 }
 
-plot.weight.classes <- function(x,w.vertices,current.weights=NULL){
+plot.weight.classes <- function(x, ...)
+    UseMethod("plot.weight.classes")
+
+## FIXME: x is an element of envindex.bound and should really be its own class
+plot.weight.classes.list<-function(x,dir,attribs.usesduration,...){
+    rr <- run.scen(x,dir=dir,attribs.usesduration,...)
+    plot.weight.classes(rr$mean.diff.attribs,
+                        current.weights=x[[sprintf("pars.%s.weights",dir)]])
+}
+
+plot.weight.classes.numeric <- function(x,w.vertices,current.weights=NULL){
     if(missing(w.vertices)) w.vertices <- weight.classes(x)
     nattrib <- length(x)
     par(mfrow=c(nattrib,nattrib))
