@@ -25,12 +25,18 @@ run.scen <- function(xx,dir="max",attribs.usesduration){
        pd.s=pd.s,pd.b=pd.b)
 }
 
-## TODO: check xx format correct
+## TODO: check xx format is valid
 run.pref <- function(xx,attrib,dir="max"){
-  cpt <- index.all[[sprintf("%s_%s.csv", xx$species,attrib)]]
-  approxfun(cpt[,1],xx[[sprintf("pars.%s.%s",dir, attrib)]],rule=2)
+  bkpts <- xx[[sprintf("bkpts.%s",attrib)]]
+  if(is.null(bkpts)){
+   ##Only for backwards compatibility
+   warning(sprintf("envindex.bound element doesn't have element bkpts.%s, searching in index.all",attrib))
+   cpt <- index.all[[sprintf("%s_%s.csv", xx$species,attrib)]]
+   return(approxfun(cpt[,1],xx[[sprintf("pars.%s.%s",dir, attrib)]],rule=2))
+  }
+  approxfun(bkpts,xx[[sprintf("pars.%s.%s",dir, attrib)]],rule=2)
 }
-##plot(run.pref(xx,species,"duration",dir="max"),0,1000)
+##plot(run.pref(xx[[1]],"duration",dir="max"),0,1000)
 
 ## TODO: maintain order of days
 dayPrefsDur <- function(xx,dir,idx,attrib,attribs.usesduration){
