@@ -1,6 +1,13 @@
 ## assume sidx,bidx in global
-run.scen <- function(xx,dir="max",attribs.usesduration){
+run.scen <- function(xx,dir="max",attribs.usesduration, data=NULL){
   stopifnot(!is.null(xx$species)) ##FIXME
+  ##It is more efficient to avoid recalculating data, 
+  ## but if it isn't specified, calculate it
+  if(is.null(data)){
+   data=envindex.diff.getdata(scen=xx$scen,baseline=xx$baseline,
+                        assetid=xx$assetid,ctf=xx$ctf)
+  }
+  
   weights <- xx[[sprintf("pars.%s.weights",dir)]]
   attribs <- names(weights)
   ## Get event prefs for each attribute
