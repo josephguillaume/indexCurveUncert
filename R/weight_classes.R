@@ -39,7 +39,7 @@ plot.weight.classes <- function(x, ...)
 ## FIXME: x is an element of envindex.bound and should really be its own class
 plot.weight.classes.list<-function(x,dir,attribs.usesduration,...){
     rr <- run.scen(x,dir=dir,attribs.usesduration,...)
-    plot.weight.classes(rr$mean.diff.attribs,
+    plot.weight.classes(rr$total.diff.attribs,
                         current.weights=x[[sprintf("pars.%s.weights",dir)]])
 }
 
