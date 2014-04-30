@@ -18,7 +18,7 @@ what.weights(x)
 
 }
 \value{
-data.frame with columns assetid,ctf,species,use.dur,diff and attribute values
+data.frame with columns assetid,ctf,species,use.dur,run.type,diff and values of attribute weights
 }
 \author{
 Joseph Guillaume
@@ -28,5 +28,3 @@ Joseph Guillaume
 }
 \examples{
 }
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
