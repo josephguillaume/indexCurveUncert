@@ -1,5 +1,4 @@
-## assume sidx,bidx in global
-run.scen <- function(xx,dir="max",attribs.usesduration, data=NULL){
+run.scen <- function(xx,dir="max",attribs.usesduration,data=NULL){
   stopifnot(!is.null(xx$species)) ##FIXME
   ##It is more efficient to avoid recalculating data, 
   ## but if it isn't specified, calculate it
@@ -7,27 +6,26 @@ run.scen <- function(xx,dir="max",attribs.usesduration, data=NULL){
    data=envindex.diff.getdata(scen=xx$scen,baseline=xx$baseline,
                         assetid=xx$assetid,ctf=xx$ctf)
   }
-  
   weights <- xx[[sprintf("pars.%s.weights",dir)]]
   attribs <- names(weights)
   ## Get event prefs for each attribute
   pp.s <- lapply(attribs,function(attrib)
-                 ##run.pref(xx,attrib,dir=dir)(sidx$events[[attrib]])
-                 dayPrefsDur(xx,dir,sidx,attrib,attribs.usesduration)
+                 ##run.pref(xx,attrib,dir=dir)(data$sidx$events[[attrib]])
+                 dayPrefsDur(xx,dir,data$sidx,attrib,attribs.usesduration)
                  )
   names(pp.s) <- attribs
   pp.b <- lapply(attribs,function(attrib)
-                 dayPrefsDur(xx,dir,bidx,attrib,attribs.usesduration)
+                 dayPrefsDur(xx,dir,data$bidx,attrib,attribs.usesduration)
                  )
   names(pp.b) <- attribs
   ## Get day prefs. Days for different attributes must be of same length
-  pd.s <- rep(0,sidx$ndays)
+  pd.s <- rep(0,data$sidx$ndays)
   for(i in 1:length(weights)) pd.s <- pd.s+weights[i]*pp.s[[i]]
-  pd.b <- rep(0,bidx$ndays)
+  pd.b <- rep(0,data$bidx$ndays)
   for(i in 1:length(weights)) pd.b <- pd.b+weights[i]*pp.b[[i]]
-  ## Total diff
-  total.diff <- sum(pd.s)-sum(pd.b)
-  list(total.diff=total.diff,
+  list(total.diff=sum(pd.s)-sum(pd.b),
+       total.diff.attribs=sapply(pp.s,sum)-sapply(pp.b,sum),
+       mean.diff.attribs=sapply(pp.s,mean)-sapply(pp.b,mean),
        pp.s=pp.s,pp.b=pp.b,
        pd.s=pd.s,pd.b=pd.b)
 }
