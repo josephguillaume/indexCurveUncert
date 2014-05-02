@@ -1,4 +1,5 @@
-weight.classes <- function(x){
+## what weights would have sum(x*weights)<thres and converse
+weight.classes <- function(x,thres=0){
     library(rcdd)
     nattrib <- length(x)
     ws.all <- NULL
@@ -6,12 +7,11 @@ weight.classes <- function(x){
         constr <- list(constr=
                        matrix(byrow=T,ncol=nattrib,c(
                                       rep(1,nattrib), ##Sum to 1
-                                      ##-x,             ##dS>=0
-                                      dir*x, ##dS<0
+                                      dir*x, ##dS<0 if dir=1
                                       -diag(1,nrow=nattrib,ncol=nattrib), ## >=0
                                       diag(1,nrow=nattrib,ncol=nattrib) ## <=1
                                       )),
-                       rhs=c(1,0,rep(0,nattrib),rep(1,nattrib)),
+                       rhs=c(1,thres,rep(0,nattrib),rep(1,nattrib)),
                        dir=c("=","<=",rep("<=",nattrib),rep("<=",nattrib))
                        )
 
@@ -37,14 +37,16 @@ plot.weight.classes <- function(x, ...)
     UseMethod("plot.weight.classes")
 
 ## FIXME: x is an element of envindex.bound and should really be its own class
-plot.weight.classes.list<-function(x,dir,attribs.usesduration,...){
+plot.weight.classes.list<-function(x,dir,attribs.usesduration,thres=0,...){
     rr <- run.scen(x,dir=dir,attribs.usesduration,...)
     plot.weight.classes(rr$total.diff.attribs,
-                        current.weights=x[[sprintf("pars.%s.weights",dir)]])
+                        current.weights=x[[sprintf("pars.%s.weights",dir)]],
+                        thres=thres
+                        )
 }
 
-plot.weight.classes.numeric <- function(x,w.vertices,current.weights=NULL){
-    if(missing(w.vertices)) w.vertices <- weight.classes(x)
+plot.weight.classes.numeric <- function(x,w.vertices,current.weights=NULL,thres=0){
+    if(missing(w.vertices)) w.vertices <- weight.classes(x,thres=thres)
     nattrib <- length(x)
     par(mfrow=c(nattrib,nattrib))
     cc <- expand.grid(1:nattrib,1:nattrib)
