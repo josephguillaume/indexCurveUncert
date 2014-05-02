@@ -30,7 +30,11 @@ weight.classes <- function(x,thres=0){
         ##TODO: is this always appropriate if there are only two indices?
         if(nrow(v)==2) ws.all <- rbind(ws.all,c(dir=dir,rep(0,length(x))))
     }
-    colnames(ws.all) <- c("dir",names(x))
+    if(!is.null(names(x))) {
+        colnames(ws.all) <- c("dir",names(x))
+    } else {
+        colnames(ws.all) <- c("dir",sprintf("X%d",1:length(x)))
+    }
     rownames(ws.all) <- 1:nrow(ws.all)
     ws.all
 }
