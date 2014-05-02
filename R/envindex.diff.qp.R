@@ -109,7 +109,10 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                                                  species=species,
                                                  use.dur=use.dur,
                                                  diff.min=w.min$obj,
-                                                 diff.max=w.max$obj),
+                                                 diff.max=w.max$obj,
+                                                 diff.min.attribs=sapply(prefs,function(x) x$min$obj),
+                                                 diff.max.attribs=sapply(prefs,function(x) x$max$obj)
+                                                 ),
                                             bkpts=bkpts,
                                             pars.min=pars.min,
                                             pars.max=pars.max
