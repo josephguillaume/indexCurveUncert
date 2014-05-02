@@ -96,24 +96,29 @@ elements as data.frames
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
 Joseph Guillaume
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
+## Define the x values of the preference curves
+## named list of single column data.frames
+index.all=list("our.species_salinity.csv"=data.frame(X1=c(0,40,100,300)))
+
+## Defines the way constraints will be looked for
+getWeightConstraints<-getWeightConstraintsLists
+getPrefConstraints<-getPrefConstraintsLists
+
+## Define some constraints
+## ?getPrefConstraints
+pref.bounds<-list()
+pref.bounds$our.species_salinity.csv<-rbind(data.frame(min.x=0,max.x=100,min.y=0.8,max.y=NA),
+                                            data.frame(min.x=101,max.x=500,min.y=NA,max.y=0.2)
+)    
+
+## Check what constraints the algorithm will see
+getWeightConstraints("our.species","salinity")
+getPrefConstraints("our.species","salinity")
+
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ ~kwd1 }
 \keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

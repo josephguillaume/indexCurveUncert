@@ -79,6 +79,39 @@ Joseph Guillaume
 Calls lp.weights,lp.perf
 }
 \examples{
+
+## Return the data for given scenarios + ndays
+## named list of functions that returns vector of data for given scenario
+attrib.fns=list(
+  salinity=function(scenario,...) {
+    if(scenario=="scenario") {
+      return(100)
+    } else if(scenario=="baseline"){
+      return(50)
+    } else if(scenario=="none") {
+      ## Null means no data
+      return(NULL)
+    } else stop("Unrecognised scenario name")
+  },
+  ndays=function(...) return(1)
+  )
+## Define the x values of the preference curves
+## named list of single column data.frames
+index.all=list("our.species_salinity.csv"=data.frame(X1=c(0,40,100,300)))
+
+## Define the attributes that will be used (and the 'duration' of each measurement)
+attribs.usesduration=c(salinity=FALSE)
+
+## Defines the way constraints will be looked for
+getWeightConstraints<-getWeightConstraintsLists
+getPrefConstraints<-getPrefConstraintsLists
+
+## Finds the minimum and maximum using linear programming - returns an envindex.bound object
+x=envindex.diff.qp(assetid=NA,ctf=NA,scen="scenario",baseline="none",ecospecies="our.species",attribs.usesduration=attribs.usesduration)
+
+x
+plot(x)
+
 }
 \keyword{ ~kwd1 }
 \keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
