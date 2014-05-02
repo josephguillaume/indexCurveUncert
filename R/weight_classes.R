@@ -11,7 +11,7 @@ weight.classes <- function(x,thres=0){
                                       -diag(1,nrow=nattrib,ncol=nattrib), ## >=0
                                       diag(1,nrow=nattrib,ncol=nattrib) ## <=1
                                       )),
-                       rhs=c(1,thres,rep(0,nattrib),rep(1,nattrib)),
+                       rhs=c(1,dir*thres,rep(0,nattrib),rep(1,nattrib)),
                        dir=c("=","<=",rep("<=",nattrib),rep("<=",nattrib))
                        )
 
@@ -23,8 +23,10 @@ weight.classes <- function(x,thres=0){
         validcdd(v,representation="V")
         stopifnot(v[, 1] == "0")
         stopifnot(v[, 2] == "1")
-        ws.all <- rbind(ws.all,cbind(dir=dir,
-                                     v[,-(1:2),drop=FALSE]))
+        if(nrow(v)>0){
+         ws.all <- rbind(ws.all,cbind(dir=dir,
+                                      v[,-(1:2),drop=FALSE]))
+        }
         ##TODO: is this always appropriate if there are only two indices?
         if(nrow(v)==2) ws.all <- rbind(ws.all,c(dir=dir,rep(0,length(x))))
     }
@@ -61,20 +63,19 @@ plot.weight.classes.numeric <- function(x,w.vertices,current.weights=NULL,thres=
             plot(NULL,xlim=c(0,1),ylim=c(-1,1),
                  xlab=names(x)[cc[i,1]],ylab=NA
                  )
-            segments(x0=min(ws.pos[,cc[i,1]]),x1=max(ws.pos[,cc[i,1]]),y0=1,y1=1,col=green(),lwd=2)
-            segments(x0=min(ws.neg[,cc[i,1]]),x1=max(ws.neg[,cc[i,1]]),y0=-1,y1=-1,col=red(),lwd=2)
+            if(nrow(ws.pos)>0) segments(x0=min(ws.pos[,cc[i,1]]),x1=max(ws.pos[,cc[i,1]]),y0=1,y1=1,col=green(),lwd=2)
+            if(nrow(ws.neg)>0) segments(x0=min(ws.neg[,cc[i,1]]),x1=max(ws.neg[,cc[i,1]]),y0=-1,y1=-1,col=red(),lwd=2)
             if(!is.null(current.weights)) abline(v=current.weights[cc[i,1]])
         } else {
             ##plot(w.vertices[ch,cc[i,1]],w.vertices[ch,cc[i,2]],type="l",xlim=c(0,1),ylim=c(0,1))
             plot(NULL,xlim=c(0,1),ylim=c(0,1),
                  xlab=names(x)[cc[i,1]],ylab=names(x)[cc[i,2]]
                  )
-            polygon(ws.neg[ch.neg,as.numeric(cc[i,])],col=red())
-            polygon(ws.pos[ch.pos,as.numeric(cc[i,])],col=green())
+            if(nrow(ws.neg)>0) polygon(ws.neg[ch.neg,as.numeric(cc[i,])],col=red())
+            if(nrow(ws.pos)>0) polygon(ws.pos[ch.pos,as.numeric(cc[i,])],col=green())
             if(!is.null(current.weights)) points(current.weights[cc[i,1]],current.weights[cc[i,2]])
         }
     }
-
 }
 
 ## weight.comp <- data.frame(a="gwlevel",
