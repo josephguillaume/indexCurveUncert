@@ -58,7 +58,7 @@ function(xs,ev,bounds=NULL,dir="min",constr=list(),dur=NULL){
     cc <- paste(cc1,cc2,sep="")
     with(as.list(vals),eval(parse(text=cc)))
   })
-
+  stopifnot(all(is.finite(obj)))
   ## Solve LP
   lprec <- make.lp(NROW(constr),nvar)
   ## Broad bounds
