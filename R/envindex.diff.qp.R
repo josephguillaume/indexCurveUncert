@@ -42,6 +42,8 @@ function(...,scen,baseline,ecospecies,use.durs=FALSE,
                            sidx$events[[attrib]])
                 lapply(ev[!sapply(ev,is.null)],na.fail)
                 cpt <- index.all[[sprintf("%s_%s.csv", species,attrib)]]
+                ## Breakpoint abcissa must be unique and sorted
+                stopifnot(identical(cpt[,1],sort(unique(cpt[,1]))))
                 ##Attributes will not be considered if cpt is NULL
                 if(is.null(cpt)) return(NULL)
 
